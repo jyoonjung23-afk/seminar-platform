@@ -36,12 +36,18 @@ export default function App() {
       q9: '',
     },
     practice3: {
-      check1: false,
-      check2: false,
-      check3: false,
-      check4: false,
-      check5: false,
-      check6: false,
+      check1_result: '',
+      check1_memo: '',
+      check2_result: '',
+      check2_memo: '',
+      check3_result: '',
+      check3_memo: '',
+      check4_result: '',
+      check4_memo: '',
+      check5_result: '',
+      check5_memo: '',
+      check6_result: '',
+      check6_memo: '',
     },
   });
   const [saved, setSaved] = useState(false);
@@ -147,9 +153,10 @@ export default function App() {
           .q-label { font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
           .q-answer { background-color: #ecf0f1; padding: 10px; border-radius: 4px; min-height: 40px; white-space: pre-wrap; }
           .checklist { margin: 15px 0; }
-          .checklist-item { margin: 10px 0; }
-          .checked::before { content: '✓'; color: #27ae60; font-weight: bold; margin-right: 8px; }
-          .unchecked::before { content: '○'; color: #bdc3c7; margin-right: 8px; }
+          .checklist-item { margin: 15px 0; padding: 10px; background-color: #f9fafb; border-radius: 4px; }
+          .checklist-label { font-weight: bold; margin-bottom: 8px; }
+          .checklist-result { margin-bottom: 8px; }
+          .checklist-memo { font-size: 13px; color: #666; }
           .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #bdc3c7; font-size: 12px; color: #666; }
         </style>
 
@@ -227,30 +234,12 @@ export default function App() {
           <div class="section-title">일관성 체크</div>
           <div style="font-size: 14px; color: #666; margin-bottom: 15px;">네이버, 구글 등 외부 사이트에서 병원 정보 일관성 체크</div>
           <div class="checklist">
-            <div class="checklist-item">
-              <span class="${data.practice3.check1 ? 'checked' : 'unchecked'}"></span>
-              정의가 동일한가?
-            </div>
-            <div class="checklist-item">
-              <span class="${data.practice3.check2 ? 'checked' : 'unchecked'}"></span>
-              주력 질환이 일치하는가?
-            </div>
-            <div class="checklist-item">
-              <span class="${data.practice3.check3 ? 'checked' : 'unchecked'}"></span>
-              환자 타겟이 일치하는가?
-            </div>
-            <div class="checklist-item">
-              <span class="${data.practice3.check4 ? 'checked' : 'unchecked'}"></span>
-              치료 철학이 일치하는가?
-            </div>
-            <div class="checklist-item">
-              <span class="${data.practice3.check5 ? 'checked' : 'unchecked'}"></span>
-              의료진 소개가 일치하는가?
-            </div>
-            <div class="checklist-item">
-              <span class="${data.practice3.check6 ? 'checked' : 'unchecked'}"></span>
-              병원의 정보가 일치하는가?
-            </div>
+            ${generateChecklistHTML(data.practice3, '정의가 동일한가?', 'check1')}
+            ${generateChecklistHTML(data.practice3, '주력 질환이 일치하는가?', 'check2')}
+            ${generateChecklistHTML(data.practice3, '환자 타겟이 일치하는가?', 'check3')}
+            ${generateChecklistHTML(data.practice3, '치료 철학이 일치하는가?', 'check4')}
+            ${generateChecklistHTML(data.practice3, '의료진 소개가 일치하는가?', 'check5')}
+            ${generateChecklistHTML(data.practice3, '병원의 정보가 일치하는가?', 'check6')}
           </div>
         </div>
 
@@ -470,16 +459,54 @@ export default function App() {
                 { key: 'check6', label: '병원의 정보가 일치하는가?' },
               ].map((item) => (
                 <div key={item.key} style={styles.checklistItem}>
-                  <input
-                    type="checkbox"
-                    checked={data.practice3[item.key]}
-                    onChange={(e) => {
-                      handleChange(`practice3.${item.key}`, e.target.checked);
-                      saveData();
-                    }}
-                    style={styles.checkbox}
-                  />
-                  <label style={styles.checkboxLabel}>{item.label}</label>
+                  <div style={styles.checklistLabel}>{item.label}</div>
+                  
+                  <div style={styles.checklistOptions}>
+                    <label style={styles.radioLabel}>
+                      <input
+                        type="radio"
+                        name={item.key}
+                        value="o"
+                        checked={data.practice3[`${item.key}_result`] === 'o'}
+                        onChange={(e) => {
+                          handleChange(`practice3.${item.key}_result`, 'o');
+                          if (e.target.value === 'o') {
+                            handleChange(`practice3.${item.key}_memo`, '');
+                          }
+                          saveData();
+                        }}
+                      />
+                      <span style={styles.radioText}>✓ 동일합니다</span>
+                    </label>
+                    
+                    <label style={styles.radioLabel}>
+                      <input
+                        type="radio"
+                        name={item.key}
+                        value="x"
+                        checked={data.practice3[`${item.key}_result`] === 'x'}
+                        onChange={(e) => {
+                          handleChange(`practice3.${item.key}_result`, 'x');
+                          saveData();
+                        }}
+                      />
+                      <span style={styles.radioText}>✗ 다릅니다</span>
+                    </label>
+                  </div>
+
+                  {/* X를 선택했을 때만 메모칸 표시 */}
+                  {data.practice3[`${item.key}_result`] === 'x' && (
+                    <div style={styles.memoSection}>
+                      <label style={styles.memoLabel}>수정 필요사항:</label>
+                      <textarea
+                        value={data.practice3[`${item.key}_memo`]}
+                        onChange={(e) => handleChange(`practice3.${item.key}_memo`, e.target.value)}
+                        onBlur={saveData}
+                        placeholder="어떤 부분을 수정해야 하는지 입력하세요"
+                        style={styles.memoInput}
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -520,6 +547,22 @@ export default function App() {
       </div>
     </div>
   );
+}
+
+// PDF용 체크리스트 HTML 생성
+function generateChecklistHTML(practice3, label, key) {
+  const result = practice3[`${key}_result`];
+  const memo = practice3[`${key}_memo`];
+  
+  return `
+    <div class="checklist-item">
+      <div class="checklist-label">${label}</div>
+      <div class="checklist-result">
+        ${result === 'o' ? '✓ 동일합니다' : result === 'x' ? '✗ 다릅니다' : '(미선택)'}
+      </div>
+      ${result === 'x' && memo ? `<div class="checklist-memo"><strong>수정 필요사항:</strong> ${memo}</div>` : ''}
+    </div>
+  `;
 }
 
 const styles = {
@@ -669,20 +712,58 @@ const styles = {
     borderRadius: '8px',
   },
   checklistItem: {
+    backgroundColor: 'white',
+    padding: '15px',
+    marginBottom: '15px',
+    borderRadius: '6px',
+    border: '1px solid #e8eef5',
+  },
+  checklistLabel: {
+    fontWeight: '600',
+    color: '#2c3e50',
+    marginBottom: '12px',
+    fontSize: '15px',
+  },
+  checklistOptions: {
+    display: 'flex',
+    gap: '20px',
+    marginBottom: '12px',
+  },
+  radioLabel: {
     display: 'flex',
     alignItems: 'center',
-    marginBottom: '15px',
-  },
-  checkbox: {
-    width: '18px',
-    height: '18px',
-    marginRight: '12px',
     cursor: 'pointer',
+    fontSize: '14px',
   },
-  checkboxLabel: {
-    fontSize: '15px',
+  radioText: {
+    marginLeft: '8px',
     color: '#333',
-    cursor: 'pointer',
+  },
+  memoSection: {
+    marginTop: '12px',
+    paddingTop: '12px',
+    borderTop: '1px solid #e8eef5',
+    backgroundColor: '#fafafa',
+    padding: '12px',
+    borderRadius: '4px',
+  },
+  memoLabel: {
+    display: 'block',
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#e74c3c',
+    marginBottom: '8px',
+  },
+  memoInput: {
+    width: '100%',
+    padding: '10px 12px',
+    fontSize: '14px',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+    boxSizing: 'border-box',
+    fontFamily: 'inherit',
+    height: '70px',
+    resize: 'vertical',
   },
   buttonGroup: {
     display: 'flex',
