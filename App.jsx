@@ -11,14 +11,27 @@ export default function App() {
   const [userId, setUserId] = useState(null);
   const [participantName, setParticipantName] = useState('');
   const [isStarted, setIsStarted] = useState(false);
+  const [activeTab, setActiveTab] = useState(0); // 0: 고객정의, 1: 우리병원정의, 2: 일관성체크
   const [data, setData] = useState({
     practice1: {
       q1: '',
       q2: '',
       q3: '',
       q4: '',
+      q5: '',
     },
     practice2: {
+      q1: '',
+      q2: '',
+      q3: '',
+      q4: '',
+      q5: '',
+      q6: '',
+      q7: '',
+      q8: '',
+      q9: '',
+    },
+    practice3: {
       check1: false,
       check2: false,
       check3: false,
@@ -131,56 +144,95 @@ export default function App() {
         </div>
 
         <div class="section">
-          <div class="section-title">실습 1: 병원의 정체성 정의하기</div>
-
+          <div class="section-title">고객 정의</div>
           <div class="question">
-            <div class="q-label">1) 고객은 누구인가?</div>
+            <div class="q-label">1) 가장 많이 오는 환자는?</div>
             <div class="q-answer">${data.practice1.q1 || '(미기입)'}</div>
           </div>
-
           <div class="question">
-            <div class="q-label">2) 우리는 누구인가?</div>
+            <div class="q-label">2) 환자는 어떤 순간에 우리를 찾는가?</div>
             <div class="q-answer">${data.practice1.q2 || '(미기입)'}</div>
           </div>
-
           <div class="question">
-            <div class="q-label">3) 왜 우리여야 하는가?</div>
+            <div class="q-label">3) 우리의 환자는 무엇을 가장 두려워하는가?</div>
             <div class="q-answer">${data.practice1.q3 || '(미기입)'}</div>
           </div>
-
           <div class="question">
-            <div class="q-label">4) 우리 병원 한 문장으로 정의하기</div>
+            <div class="q-label">4) 환자는 무엇을 원하는가?</div>
             <div class="q-answer">${data.practice1.q4 || '(미기입)'}</div>
+          </div>
+          <div class="question">
+            <div class="q-label">5) 환자가 병원에 와서 가장 자주 하는 말은?</div>
+            <div class="q-answer">${data.practice1.q5 || '(미기입)'}</div>
           </div>
         </div>
 
         <div class="section">
-          <div class="section-title">실습 2: 병원의 일관성 갖추기</div>
-          <div style="font-size: 14px; color: #666; margin-bottom: 15px;">네이버, 구글 등 외부 사이트에서 병원 정보 일관성 체크</div>
+          <div class="section-title">우리 병원 정의</div>
+          <div class="question">
+            <div class="q-label">1) 우리가 가장 잘 보는 질환은?</div>
+            <div class="q-answer">${data.practice2.q1 || '(미기입)'}</div>
+          </div>
+          <div class="question">
+            <div class="q-label">2) 치료 철학</div>
+            <div class="q-answer">${data.practice2.q2 || '(미기입)'}</div>
+          </div>
+          <div class="question">
+            <div class="q-label">3) 숫자로 표현하는 우리 병원</div>
+            <div class="q-answer">${data.practice2.q3 || '(미기입)'}</div>
+          </div>
+          <div class="question">
+            <div class="q-label">4) 의료진의 강점</div>
+            <div class="q-answer">${data.practice2.q4 || '(미기입)'}</div>
+          </div>
+          <div class="question">
+            <div class="q-label">5) 병원 시설의 강점</div>
+            <div class="q-answer">${data.practice2.q5 || '(미기입)'}</div>
+          </div>
+          <div class="question">
+            <div class="q-label">6) 환자가 가장 만족하는 부분</div>
+            <div class="q-answer">${data.practice2.q6 || '(미기입)'}</div>
+          </div>
+          <div class="question">
+            <div class="q-label">7) 경쟁병원 대신 우리 병원을 선택하는 이유</div>
+            <div class="q-answer">${data.practice2.q7 || '(미기입)'}</div>
+          </div>
+          <div class="question">
+            <div class="q-label">8) 우리 병원에 맞지 않는 환자는 누구인가?</div>
+            <div class="q-answer">${data.practice2.q8 || '(미기입)'}</div>
+          </div>
+          <div class="question">
+            <div class="q-label">9) 우리 병원 한 문장으로 정의하기</div>
+            <div class="q-answer">${data.practice2.q9 || '(미기입)'}</div>
+          </div>
+        </div>
 
+        <div class="section">
+          <div class="section-title">일관성 체크</div>
+          <div style="font-size: 14px; color: #666; margin-bottom: 15px;">네이버, 구글 등 외부 사이트에서 병원 정보 일관성 체크</div>
           <div class="checklist">
             <div class="checklist-item">
-              <span class="${data.practice2.check1 ? 'checked' : 'unchecked'}"></span>
+              <span class="${data.practice3.check1 ? 'checked' : 'unchecked'}"></span>
               정의가 동일한가?
             </div>
             <div class="checklist-item">
-              <span class="${data.practice2.check2 ? 'checked' : 'unchecked'}"></span>
+              <span class="${data.practice3.check2 ? 'checked' : 'unchecked'}"></span>
               주력 질환이 일치하는가?
             </div>
             <div class="checklist-item">
-              <span class="${data.practice2.check3 ? 'checked' : 'unchecked'}"></span>
+              <span class="${data.practice3.check3 ? 'checked' : 'unchecked'}"></span>
               환자 타겟이 일치하는가?
             </div>
             <div class="checklist-item">
-              <span class="${data.practice2.check4 ? 'checked' : 'unchecked'}"></span>
+              <span class="${data.practice3.check4 ? 'checked' : 'unchecked'}"></span>
               치료 철학이 일치하는가?
             </div>
             <div class="checklist-item">
-              <span class="${data.practice2.check5 ? 'checked' : 'unchecked'}"></span>
+              <span class="${data.practice3.check5 ? 'checked' : 'unchecked'}"></span>
               의료진 소개가 일치하는가?
             </div>
             <div class="checklist-item">
-              <span class="${data.practice2.check6 ? 'checked' : 'unchecked'}"></span>
+              <span class="${data.practice3.check6 ? 'checked' : 'unchecked'}"></span>
               병원의 정보가 일치하는가?
             </div>
           </div>
@@ -247,86 +299,159 @@ export default function App() {
           <p style={styles.participantInfo}>병원: {participantName}</p>
         </div>
 
-        {/* 실습 1 */}
-        <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>실습 1: 병원의 정체성 정의하기</h2>
-
-          <div style={styles.question}>
-            <label style={styles.label}>1) 고객은 누구인가?</label>
-            <textarea
-              value={data.practice1.q1}
-              onChange={(e) => handleChange('practice1.q1', e.target.value)}
-              onBlur={saveData}
-              placeholder="예: 30-50대 직장인, 만성질환 환자 등"
-              style={styles.textarea}
-            />
-          </div>
-
-          <div style={styles.question}>
-            <label style={styles.label}>2) 우리는 누구인가?</label>
-            <textarea
-              value={data.practice1.q2}
-              onChange={(e) => handleChange('practice1.q2', e.target.value)}
-              onBlur={saveData}
-              placeholder="병원의 정체성, 특징 등을 설명하세요"
-              style={styles.textarea}
-            />
-          </div>
-
-          <div style={styles.question}>
-            <label style={styles.label}>3) 왜 우리여야 하는가?</label>
-            <textarea
-              value={data.practice1.q3}
-              onChange={(e) => handleChange('practice1.q3', e.target.value)}
-              onBlur={saveData}
-              placeholder="차별화 포인트, 선택 이유 등을 설명하세요"
-              style={styles.textarea}
-            />
-          </div>
-
-          <div style={styles.question}>
-            <label style={styles.label}>4) 우리 병원 한 문장으로 정의하기</label>
-            <textarea
-              value={data.practice1.q4}
-              onChange={(e) => handleChange('practice1.q4', e.target.value)}
-              onBlur={saveData}
-              placeholder="병원을 한 문장으로 정의해보세요"
-              style={{ ...styles.textarea, height: '60px' }}
-            />
-          </div>
+        {/* 탭 메뉴 */}
+        <div style={styles.tabContainer}>
+          <button
+            style={{
+              ...styles.tabButton,
+              ...
+(activeTab === 0 ? styles.tabButtonActive : styles.tabButtonInactive),
+            }}
+            onClick={() => setActiveTab(0)}
+          >
+            고객 정의
+          </button>
+          <button
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === 1 ? styles.tabButtonActive : styles.tabButtonInactive),
+            }}
+            onClick={() => setActiveTab(1)}
+          >
+            우리 병원 정의
+          </button>
+          <button
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === 2 ? styles.tabButtonActive : styles.tabButtonInactive),
+            }}
+            onClick={() => setActiveTab(2)}
+          >
+            일관성 체크
+          </button>
         </div>
 
-        {/* 실습 2 */}
-        <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>실습 2: 병원의 일관성 갖추기</h2>
-          <p style={styles.description}>
-            네이버, 구글 등에서 병원명을 검색하여 나오는 정보들이 모두 일치하는지 확인하세요.
-          </p>
+        {/* 고객 정의 탭 */}
+        {activeTab === 0 && (
+          <div style={styles.section}>
+            <h2 style={styles.sectionTitle}>고객 정의</h2>
 
-          <div style={styles.checklist}>
+            <div style={styles.question}>
+              <label style={styles.label}>1) 가장 많이 오는 환자는?</label>
+              <span style={styles.hint}>(연령, 성별, 직업, 생활패턴 등)</span>
+              <textarea
+                value={data.practice1.q1}
+                onChange={(e) => handleChange('practice1.q1', e.target.value)}
+                onBlur={saveData}
+                style={styles.textarea}
+              />
+            </div>
+
+            <div style={styles.question}>
+              <label style={styles.label}>2) 환자는 어떤 순간에 우리를 찾는가?</label>
+              <textarea
+                value={data.practice1.q2}
+                onChange={(e) => handleChange('practice1.q2', e.target.value)}
+                onBlur={saveData}
+                style={styles.textarea}
+              />
+            </div>
+
+            <div style={styles.question}>
+              <label style={styles.label}>3) 우리의 환자는 무엇을 가장 두려워하는가?</label>
+              <textarea
+                value={data.practice1.q3}
+                onChange={(e) => handleChange('practice1.q3', e.target.value)}
+                onBlur={saveData}
+                style={styles.textarea}
+              />
+            </div>
+
+            <div style={styles.question}>
+              <label style={styles.label}>4) 환자는 무엇을 원하는가?</label>
+              <textarea
+                value={data.practice1.q4}
+                onChange={(e) => handleChange('practice1.q4', e.target.value)}
+                onBlur={saveData}
+                style={styles.textarea}
+              />
+            </div>
+
+            <div style={styles.question}>
+              <label style={styles.label}>5) 환자가 병원에 와서 가장 자주 하는 말은?</label>
+              <textarea
+                value={data.practice1.q5}
+                onChange={(e) => handleChange('practice1.q5', e.target.value)}
+                onBlur={saveData}
+                style={styles.textarea}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* 우리 병원 정의 탭 */}
+        {activeTab === 1 && (
+          <div style={styles.section}>
+            <h2 style={styles.sectionTitle}>우리 병원 정의</h2>
+
             {[
-              { key: 'check1', label: '정의가 동일한가?' },
-              { key: 'check2', label: '주력 질환이 일치하는가?' },
-              { key: 'check3', label: '환자 타겟이 일치하는가?' },
-              { key: 'check4', label: '치료 철학이 일치하는가?' },
-              { key: 'check5', label: '의료진 소개가 일치하는가?' },
-              { key: 'check6', label: '병원의 정보가 일치하는가?' },
+              { key: 'q1', label: '1) 우리가 가장 잘 보는 질환은?', hint: '(1~2개)' },
+              { key: 'q2', label: '2) 치료 철학', hint: '' },
+              { key: 'q3', label: '3) 숫자로 표현하는 우리 병원', hint: '' },
+              { key: 'q4', label: '4) 의료진의 강점', hint: '(전문성 - 논문발표, 키닥터 등)' },
+              { key: 'q5', label: '5) 병원 시설의 강점', hint: '' },
+              { key: 'q6', label: '6) 환자가 가장 만족하는 부분', hint: '' },
+              { key: 'q7', label: '7) 경쟁병원 대신 우리 병원을 선택하는 이유', hint: '' },
+              { key: 'q8', label: '8) 우리 병원에 맞지 않는 환자는 누구인가?', hint: '' },
+              { key: 'q9', label: '9) 우리 병원 한 문장으로 정의하기', hint: '' },
             ].map((item) => (
-              <div key={item.key} style={styles.checklistItem}>
-                <input
-                  type="checkbox"
-                  checked={data.practice2[item.key]}
-                  onChange={(e) => {
-                    handleChange(`practice2.${item.key}`, e.target.checked);
-                    saveData();
-                  }}
-                  style={styles.checkbox}
+              <div key={item.key} style={styles.question}>
+                <label style={styles.label}>{item.label}</label>
+                {item.hint && <span style={styles.hint}>{item.hint}</span>}
+                <textarea
+                  value={data.practice2[item.key]}
+                  onChange={(e) => handleChange(`practice2.${item.key}`, e.target.value)}
+                  onBlur={saveData}
+                  style={styles.textarea}
                 />
-                <label style={styles.checkboxLabel}>{item.label}</label>
               </div>
             ))}
           </div>
-        </div>
+        )}
+
+        {/* 일관성 체크 탭 */}
+        {activeTab === 2 && (
+          <div style={styles.section}>
+            <h2 style={styles.sectionTitle}>일관성 체크</h2>
+            <p style={styles.description}>
+              네이버, 구글 등에서 병원명을 검색하여 나오는 정보들이 모두 일치하는지 확인하세요.
+            </p>
+
+            <div style={styles.checklist}>
+              {[
+                { key: 'check1', label: '정의가 동일한가?' },
+                { key: 'check2', label: '주력 질환이 일치하는가?' },
+                { key: 'check3', label: '환자 타겟이 일치하는가?' },
+                { key: 'check4', label: '치료 철학이 일치하는가?' },
+                { key: 'check5', label: '의료진 소개가 일치하는가?' },
+                { key: 'check6', label: '병원의 정보가 일치하는가?' },
+              ].map((item) => (
+                <div key={item.key} style={styles.checklistItem}>
+                  <input
+                    type="checkbox"
+                    checked={data.practice3[item.key]}
+                    onChange={(e) => {
+                      handleChange(`practice3.${item.key}`, e.target.checked);
+                      saveData();
+                    }}
+                    style={styles.checkbox}
+                  />
+                  <label style={styles.checkboxLabel}>{item.label}</label>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 저장 상태 */}
         {saved && (
@@ -352,6 +477,7 @@ export default function App() {
               setIsStarted(false);
               setParticipantName('');
               setUserId(null);
+              setActiveTab(0);
             }}
             style={styles.textButton}
           >
@@ -389,22 +515,34 @@ const styles = {
     color: '#2c3e50',
     margin: '0 0 10px 0',
   },
-  subtitle: {
-    fontSize: '20px',
-    color: '#34495e',
-    margin: '10px 0 0 0',
-    fontWeight: '500',
-  },
-  description: {
-    fontSize: '16px',
-    color: '#555',
-    lineHeight: '1.6',
-    marginBottom: '20px',
-  },
   participantInfo: {
     fontSize: '14px',
     color: '#666',
     margin: '5px 0 0 0',
+  },
+  tabContainer: {
+    display: 'flex',
+    gap: '10px',
+    marginBottom: '30px',
+    borderBottom: '2px solid #e8eef5',
+  },
+  tabButton: {
+    padding: '12px 20px',
+    fontSize: '15px',
+    fontWeight: '600',
+    border: 'none',
+    cursor: 'pointer',
+    borderRadius: '6px 6px 0 0',
+    transition: 'all 0.3s',
+  },
+  tabButtonActive: {
+    backgroundColor: '#3498db',
+    color: 'white',
+    borderBottom: '3px solid #3498db',
+  },
+  tabButtonInactive: {
+    backgroundColor: '#f5f5f5',
+    color: '#666',
   },
   section: {
     marginBottom: '40px',
@@ -425,7 +563,18 @@ const styles = {
     fontSize: '15px',
     fontWeight: '600',
     color: '#2c3e50',
+    marginBottom: '5px',
+  },
+  hint: {
+    fontSize: '13px',
+    color: '#999',
+    display: 'block',
     marginBottom: '8px',
+  },
+  description: {
+    fontSize: '14px',
+    color: '#666',
+    marginBottom: '15px',
   },
   input: {
     width: '100%',
