@@ -339,6 +339,16 @@ export default function App() {
         <div style={styles.section}>
           <h2 style={styles.sectionTitle}>실습1</h2>
           <p style={styles.description}>우리 환자가 누구인지가 아니라, 왜 지금 우리를 선택하는지 찾아봅니다.</p>
+          
+          <div style={styles.exampleBox}>
+            <p style={styles.exampleTitle}>💡 [실습1], [실습2]를 마치고 나면 이런 엔티티를 만들 수 있습니다.</p>
+            <p style={styles.exampleText}>
+              딸의 결혼식을 앞두고 앞니 상실을 더 이상 미룰 수 없지만, 수술 통증과 긴 회복기간을 걱정하는 60대 환자에게, ○○치과는 치료 선택과 회복 일정을 충분히 이해한 상태에서 앞니 치료를 결정할 수 있도록 돕는 치과다. 단순히 임플란트 시술만 제공하는 것과 달리, 정밀진단·치료계획 설명·보철 과정·사후관리를 하나의 과정으로 운영하며, 의료진의 관련 진료경력, 유사 환자 사례, 단계별 관리 프로토콜로 이를 증명한다.
+            </p>
+            <p style={styles.exampleKeywords}>
+              📌 60대 여성 | 앞니 상실 | 딸 결혼식 | 틀니 사용 또는 치료 지연 | 수술 통증 | 회복기간 | 치료계획 설명 | 임플란트
+            </p>
+          </div>
 
           {[
             { key: 'q1', label: '1. 우리가 집중하고 싶은 대표 환자는 누구인가?', guide: '연령, 성별, 직업과 생활패턴, 질환이나 증상의 상태, 기존 치료 경험 등 최근 실제로 만난 환자 중, 우리 병원이 앞으로 더 많이 만나고 싶은 대표 환자 한 명을 찾아보세요.' },
@@ -373,7 +383,7 @@ export default function App() {
             { key: 'q3', label: '3. 우리만의 차이는 환자에게 어떤 도움이 되었는가?', guide: '2번에서의 우리 병원 차별성은 환자에게 어떤 도움이 되었는지 적어보세요. 예를들어 원장이 직접 검사 결과를 설명한다는 차이가 있으면, 이로 인해 환자는 상태를 정확히 이해하고 치료를 결정하는데에 도움이 되었을 것입니다.' },
             { key: 'q4', label: '4. 우리 병원의 차별성을 만들어내는 구체적인 시스템은 무엇인가?', guide: '우리 병원의 차별성이 어떤 과정으로 만들어지는지 적어보세요. 예를 들어 환자가 치료 방향을 쉽게 이해할 수 있도록 MRI 결과를 원장이 직접 설명 한다거나, 치료 계획을 그림으로 안내 한다거나 하는 등 우리 만의 차별성을 만드는 시스템을 적어보세요.' },
             { key: 'q5', label: '5. 우리 병원의 차별성을 보여줄 수 있는 객관적인 근거는 무엇인가?', guide: '우리 병원의 차별성이 단순한 주장에 그치지 않도록 객관적으로 보여줄 수 있는 근거를 적어보세요. 의료진 경력, 특정 질환 진료 경험, 환자 사례, 검사·치료 프로토콜, 장비, 학술활동, 환자 후기, 운영 데이터 등 환자가 신뢰할 수 있는 근거를 작성해보세요.' },
-            { key: 'q6', label: '6. 우리 병원 포지셔닝 한 문장 만들기', guide: '________한 상황에 놓인 ________ 환자에게, 우리 병원은 ________을 통해 ________할 수 있도록 돕는 병원이다. 다른 대안과 달리 우리는 ________하며, 이는 ________으로 증명할 수 있다.' },
+            { key: 'q6', label: '6. 우리 병원 포지셔닝 한 문장 만들기', guide: '[상황과 문제]를 겪는 [대표 환자]에게, [병원명]은 [핵심 가치]를 제공하는 [병원 카테고리]다. [경쟁 대안]과 달리 [차별적 능력]을 갖추고 있으며, [객관적 근거]로 이를 증명한다.' },
           ].map((item) => (
             <div key={item.key} style={styles.question}>
               <label style={styles.label}>{item.label}</label>
@@ -643,6 +653,33 @@ const styles = {
   buttonGroup: {
     textAlign: 'center',
     marginTop: '30px',
+  },
+  exampleBox: {
+    backgroundColor: '#e8f4f8',
+    border: '2px solid #3498db',
+    borderRadius: '8px',
+    padding: '15px',
+    marginBottom: '25px',
+  },
+  exampleTitle: {
+    fontSize: '13px',
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: '10px',
+  },
+  exampleText: {
+    fontSize: '12px',
+    color: '#333',
+    lineHeight: '1.6',
+    marginBottom: '10px',
+  },
+  exampleKeywords: {
+    fontSize: '11px',
+    color: '#666',
+    backgroundColor: '#fff',
+    padding: '8px',
+    borderRadius: '5px',
+    margin: '0',
   },
   expiredMessage: {
     backgroundColor: '#fff',
