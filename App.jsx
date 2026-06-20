@@ -11,7 +11,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const SEMINAR_DEADLINE = new Date('2026-06-21T22:00:00').getTime();
 
 // 🏢 ADRESULT 로고 URL
-const LOGO_URL = 'https://raw.githubusercontent.com/jyoonjung23-afk/seminar-platform/main/adresult-logo.png';
+const LOGO_URL = 'https://raw.githubusercontent.com/jyoonjung23-afk/seminar-platform/main/애드리절트_파비콘png.png';
 
 export default function App() {
   const [userId, setUserId] = useState(null);
@@ -243,7 +243,7 @@ export default function App() {
             ${generateChecklistHTML(data.practice3, '주력 질환이 일치하는가?', 'check2')}
             ${generateChecklistHTML(data.practice3, '환자 타겟이 일치하는가?', 'check3')}
             ${generateChecklistHTML(data.practice3, '의료진 소개가 일치하는가?', 'check4')}
-            ${generateChecklistHTML(data.practice3, '병원 시설이 일치하는가?', 'check5')}
+            ${generateChecklistHTML(data.practice3, '병원 시설 안내가 일치하는가?', 'check5')}
             ${generateChecklistHTML(data.practice3, '진료 시간/연락처/주소가 일치하는가?', 'check6')}
           </div>
         </div>
@@ -466,7 +466,7 @@ export default function App() {
                 { key: 'check2', label: '주력 질환이 일치하는가?' },
                 { key: 'check3', label: '환자 타겟이 일치하는가?' },
                 { key: 'check4', label: '의료진 소개가 일치하는가?' },
-                { key: 'check5', label: '병원 시설이 일치하는가?' },
+                { key: 'check5', label: '병원 시설 안내가 일치하는가?' },
                 { key: 'check6', label: '진료 시간/연락처/주소가 일치하는가?' },
               ].map((item) => (
                 <div key={item.key} style={styles.checklistItem}>
