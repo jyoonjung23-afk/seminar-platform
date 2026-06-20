@@ -161,7 +161,7 @@ export default function App() {
         </style>
 
         <div class="header">
-          <div class="title">병원 브랜딩 세미나</div>
+          <div class="title">AI 병원마케팅 세미나 by ADRESULT</div>
           <div class="subtitle">병원: ${participantName || '(미기입)'}</div>
           <div class="subtitle">작성일: ${new Date().toLocaleDateString('ko-KR')}</div>
         </div>
@@ -244,13 +244,13 @@ export default function App() {
         </div>
 
         <div class="footer">
-          <p>이 문서는 병원 브랜딩 세미나 실습을 위해 생성되었습니다.</p>
+          <p>이 문서는 AI 병원마케팅 세미나 by ADRESULT 실습을 위해 생성되었습니다.</p>
         </div>
       `;
 
       const opt = {
         margin: 10,
-        filename: `병원브랜딩_${participantName || '참가자'}_${new Date().toISOString().split('T')[0]}.pdf`,
+        filename: `AI병원마케팅_${participantName || '참가자'}_${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
@@ -292,7 +292,7 @@ export default function App() {
     return (
       <div style={styles.container}>
         <div style={styles.card}>
-          <h1 style={styles.title}>👨‍⚕️ 병원 브랜딩 세미나</h1>
+          <h1 style={styles.title}>🤖 AI 병원마케팅 세미나 by ADRESULT</h1>
           <p style={styles.description}>
             병원명을 입력하고 실습을 시작하세요.
           </p>
@@ -318,7 +318,7 @@ export default function App() {
     <div style={styles.container}>
       <div style={styles.card}>
         <div style={styles.header}>
-          <h1 style={styles.title}>👨‍⚕️ 병원 브랜딩 세미나</h1>
+          <h1 style={styles.title}>🤖 AI 병원마케팅 세미나 by ADRESULT</h1>
           <p style={styles.participantInfo}>병원: {participantName}</p>
         </div>
 
