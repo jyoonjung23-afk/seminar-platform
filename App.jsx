@@ -196,7 +196,7 @@ export default function App() {
         </div>
 
         <div class="section">
-          <div class="section-title">우리 병원 정의</div>
+          <div class="section-title">우리 병원 USP</div>
           <div class="question">
             <div class="q-label">1) 우리가 가장 잘 보는 질환은?</div>
             <div class="q-answer">${data.practice2.q1 || '(미기입)'}</div>
@@ -351,7 +351,7 @@ export default function App() {
             }}
             onClick={() => setActiveTab(1)}
           >
-            우리 병원 정의
+            우리 병원 USP
           </button>
           <button
             style={{
@@ -422,21 +422,18 @@ export default function App() {
           </div>
         )}
 
-        {/* 우리 병원 정의 탭 */}
+        {/* 우리 병원 USP 탭 */}
         {activeTab === 1 && (
           <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>우리 병원 정의</h2>
+            <h2 style={styles.sectionTitle}>우리 병원 USP</h2>
 
             {[
-              { key: 'q1', label: '1) 우리가 가장 잘 보는 질환은?', hint: '(1~2개)' },
-              { key: 'q2', label: '2) 치료 철학', hint: '' },
-              { key: 'q3', label: '3) 숫자로 표현하는 우리 병원', hint: '' },
-              { key: 'q4', label: '4) 의료진의 강점', hint: '(전문성 - 논문발표, 키닥터 등)' },
-              { key: 'q5', label: '5) 병원 시설의 강점', hint: '' },
-              { key: 'q6', label: '6) 환자가 가장 만족하는 부분', hint: '' },
-              { key: 'q7', label: '7) 경쟁병원 대신 우리 병원을 선택하는 이유', hint: '' },
-              { key: 'q8', label: '8) 우리 병원에 맞지 않는 환자는 누구인가?', hint: '' },
-              { key: 'q9', label: '9) 우리 병원 한 문장으로 정의하기', hint: '' },
+              { key: 'q1', label: '1) 우리가 가장 잘 보는 질환은?', hint: '' },
+              { key: 'q2', label: '2) 환자와 상담할 때 어떤 멘트에 환자들이 치료를 결정하던가요?', hint: '' },
+              { key: 'q3', label: '3) 경쟁병원의 단점은? 경쟁병원 대신 우리 병원을 선택하는 이유는?', hint: '' },
+              { key: 'q4', label: '4) 환자의 두려움을 우리 병원에서는 어떻게 해결하나요?', hint: '' },
+              { key: 'q5', label: '5) 숫자로 표현하는 우리 병원', hint: '(예: 치료 1만례)' },
+              { key: 'q6', label: '6) 의료진의 강점', hint: '' },
             ].map((item) => (
               <div key={item.key} style={styles.question}>
                 <label style={styles.label}>{item.label}</label>
