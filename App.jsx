@@ -10,6 +10,9 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // 📅 세미나 마감 시간 설정 (2026-06-21 오후 10:00)
 const SEMINAR_DEADLINE = new Date('2026-06-21T22:00:00').getTime();
 
+// 🏢 ADRESULT 로고 URL
+const LOGO_URL = 'https://raw.githubusercontent.com/jyoonjung23-afk/seminar-platform/main/애드리절트_파비콘png.png';
+
 export default function App() {
   const [userId, setUserId] = useState(null);
   const [participantName, setParticipantName] = useState('');
@@ -145,6 +148,7 @@ export default function App() {
         <style>
           body { font-family: Arial, sans-serif; color: #333; }
           .header { border-bottom: 2px solid #2c3e50; padding-bottom: 20px; margin-bottom: 20px; }
+          .logo { width: 60px; height: auto; margin-bottom: 10px; }
           .title { font-size: 24px; font-weight: bold; color: #2c3e50; }
           .subtitle { font-size: 14px; color: #666; margin-top: 5px; }
           .section { margin: 30px 0; }
@@ -161,6 +165,7 @@ export default function App() {
         </style>
 
         <div class="header">
+          <img src="${LOGO_URL}" class="logo" alt="ADRESULT">
           <div class="title">AI 병원마케팅 세미나 by ADRESULT</div>
           <div class="subtitle">병원: ${participantName || '(미기입)'}</div>
           <div class="subtitle">작성일: ${new Date().toLocaleDateString('ko-KR')}</div>
@@ -292,7 +297,10 @@ export default function App() {
     return (
       <div style={styles.container}>
         <div style={styles.card}>
-          <h1 style={styles.title}>🤖 AI 병원마케팅 세미나 by ADRESULT</h1>
+          <div style={styles.logoContainer}>
+            <img src={LOGO_URL} alt="ADRESULT" style={styles.logoImage} />
+          </div>
+          <h1 style={styles.title}>AI 병원마케팅 세미나 by ADRESULT</h1>
           <p style={styles.description}>
             병원명을 입력하고 실습을 시작하세요.
           </p>
@@ -318,7 +326,10 @@ export default function App() {
     <div style={styles.container}>
       <div style={styles.card}>
         <div style={styles.header}>
-          <h1 style={styles.title}>🤖 AI 병원마케팅 세미나 by ADRESULT</h1>
+          <div style={styles.logoSmallContainer}>
+            <img src={LOGO_URL} alt="ADRESULT" style={styles.logoSmall} />
+          </div>
+          <h1 style={styles.title}>AI 병원마케팅 세미나 by ADRESULT</h1>
           <p style={styles.participantInfo}>병원: {participantName}</p>
         </div>
 
@@ -612,6 +623,21 @@ const styles = {
     fontSize: '14px',
     color: '#999',
     fontStyle: 'italic',
+  },
+  logoContainer: {
+    textAlign: 'center',
+    marginBottom: '20px',
+  },
+  logoImage: {
+    height: '80px',
+    width: 'auto',
+  },
+  logoSmallContainer: {
+    marginBottom: '10px',
+  },
+  logoSmall: {
+    height: '50px',
+    width: 'auto',
   },
   header: {
     marginBottom: '30px',
