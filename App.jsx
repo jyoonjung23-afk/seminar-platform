@@ -11,7 +11,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const SEMINAR_DEADLINE = new Date('2026-06-21T22:00:00').getTime();
 
 // 🏢 ADRESULT 로고 URL
-const LOGO_URL = 'https://raw.githubusercontent.com/jyoonjung23-afk/seminar-platform/main/애드리절트_파비콘png.png';
+const LOGO_URL = 'https://raw.githubusercontent.com/jyoonjung23-afk/seminar-platform/main/adresult-logo.png';
 
 export default function App() {
   const [userId, setUserId] = useState(null);
