@@ -7,11 +7,15 @@ const SUPABASE_ANON_KEY = 'sb_publishable_LNhjH630SHcpxEHWOht1jA_XVhx_6oB';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// 📅 세미나 마감 시간 설정 (2026-06-21 오후 10:00)
+const SEMINAR_DEADLINE = new Date('2026-06-21T22:00:00').getTime();
+
 export default function App() {
   const [userId, setUserId] = useState(null);
   const [participantName, setParticipantName] = useState('');
   const [isStarted, setIsStarted] = useState(false);
-  const [activeTab, setActiveTab] = useState(0); // 0: 고객정의, 1: 우리병원정의, 2: 일관성체크
+  const [activeTab, setActiveTab] = useState(0);
+  const [isExpired, setIsExpired] = useState(false);
   const [data, setData] = useState({
     practice1: {
       q1: '',
@@ -43,8 +47,14 @@ export default function App() {
   const [saved, setSaved] = useState(false);
   const [generating, setGenerating] = useState(false);
 
-  // 초기 로드: LocalStorage에서 데이터 불러오기
+  // 초기 로드: 날짜 확인 + LocalStorage 로드
   useEffect(() => {
+    const now = new Date().getTime();
+    if (now > SEMINAR_DEADLINE) {
+      setIsExpired(true);
+      return;
+    }
+
     const savedUserId = localStorage.getItem('seminar_userId');
     const savedName = localStorage.getItem('seminar_name');
     const savedData = localStorage.getItem('seminar_data');
@@ -59,8 +69,14 @@ export default function App() {
     }
   }, []);
 
-  // 시작하기
+  // 시작하기 (날짜 체크)
   const handleStart = () => {
+    const now = new Date().getTime();
+    if (now > SEMINAR_DEADLINE) {
+      setIsExpired(true);
+      return;
+    }
+
     if (!participantName.trim()) {
       alert('병원명을 입력해주세요!');
       return;
@@ -264,6 +280,24 @@ export default function App() {
     }
   };
 
+  // 🔒 마감 화면
+  if (isExpired) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.expiredCard}>
+          <div style={styles.expiredIcon}>⏰</div>
+          <h1 style={styles.expiredTitle}>세미나 기간이 종료되었습니다</h1>
+          <p style={styles.expiredMessage}>
+            죄송합니다. 세미나 마감일(2026년 6월 21일 오후 10:00)이 지나 더 이상 이용할 수 없습니다.
+          </p>
+          <p style={styles.expiredSubtext}>
+            세미나 중에 이미 다운로드하신 PDF 파일은 계속 참고하실 수 있습니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // 초기 화면 (병원명 입력)
   if (!isStarted) {
     return (
@@ -304,8 +338,7 @@ export default function App() {
           <button
             style={{
               ...styles.tabButton,
-              ...
-(activeTab === 0 ? styles.tabButtonActive : styles.tabButtonInactive),
+              ...(activeTab === 0 ? styles.tabButtonActive : styles.tabButtonInactive),
             }}
             onClick={() => setActiveTab(0)}
           >
@@ -495,14 +528,47 @@ const styles = {
     backgroundColor: '#f5f7fa',
     padding: '20px',
     fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   card: {
     maxWidth: '900px',
-    margin: '0 auto',
+    width: '100%',
     backgroundColor: 'white',
     borderRadius: '12px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
     padding: '40px',
+  },
+  expiredCard: {
+    maxWidth: '600px',
+    width: '100%',
+    backgroundColor: 'white',
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    padding: '60px 40px',
+    textAlign: 'center',
+  },
+  expiredIcon: {
+    fontSize: '64px',
+    marginBottom: '20px',
+  },
+  expiredTitle: {
+    fontSize: '28px',
+    fontWeight: '700',
+    color: '#e74c3c',
+    marginBottom: '20px',
+  },
+  expiredMessage: {
+    fontSize: '16px',
+    color: '#555',
+    lineHeight: '1.6',
+    marginBottom: '15px',
+  },
+  expiredSubtext: {
+    fontSize: '14px',
+    color: '#999',
+    fontStyle: 'italic',
   },
   header: {
     marginBottom: '30px',
@@ -519,6 +585,12 @@ const styles = {
     fontSize: '14px',
     color: '#666',
     margin: '5px 0 0 0',
+  },
+  description: {
+    fontSize: '16px',
+    color: '#555',
+    lineHeight: '1.6',
+    marginBottom: '20px',
   },
   tabContainer: {
     display: 'flex',
@@ -570,11 +642,6 @@ const styles = {
     color: '#999',
     display: 'block',
     marginBottom: '8px',
-  },
-  description: {
-    fontSize: '14px',
-    color: '#666',
-    marginBottom: '15px',
   },
   input: {
     width: '100%',
