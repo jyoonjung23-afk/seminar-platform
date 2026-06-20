@@ -239,12 +239,12 @@ export default function App() {
           <div class="section-title">일관성 체크</div>
           <div style="font-size: 14px; color: #666; margin-bottom: 15px;">네이버, 구글 등 외부 사이트에서 병원 정보 일관성 체크</div>
           <div class="checklist">
-            ${generateChecklistHTML(data.practice3, '정의가 동일한가?', 'check1')}
+            ${generateChecklistHTML(data.practice3, '병원명과 로고가 일치하는가?', 'check1')}
             ${generateChecklistHTML(data.practice3, '주력 질환이 일치하는가?', 'check2')}
             ${generateChecklistHTML(data.practice3, '환자 타겟이 일치하는가?', 'check3')}
-            ${generateChecklistHTML(data.practice3, '치료 철학이 일치하는가?', 'check4')}
-            ${generateChecklistHTML(data.practice3, '의료진 소개가 일치하는가?', 'check5')}
-            ${generateChecklistHTML(data.practice3, '병원의 정보가 일치하는가?', 'check6')}
+            ${generateChecklistHTML(data.practice3, '의료진 소개가 일치하는가?', 'check4')}
+            ${generateChecklistHTML(data.practice3, '병원 시설이 일치하는가?', 'check5')}
+            ${generateChecklistHTML(data.practice3, '진료 시간/연락처/주소가 일치하는가?', 'check6')}
           </div>
         </div>
 
