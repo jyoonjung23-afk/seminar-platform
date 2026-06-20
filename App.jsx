@@ -1,827 +1,655 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// ⚠️ 여기에 당신의 Supabase 정보를 입력하세요
+// ⚠️ 여기에 본인의 Supabase 정보를 입력하세요
 const SUPABASE_URL = 'https://dyoskqisafdsrjtvgyl.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_LNhjH630SHcpxEHWOht1jA_XVhx_6oB';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 📅 세미나 마감 시간 설정 (2026-06-21 오후 10:00)
-const SEMINAR_DEADLINE = new Date('2026-06-21T22:00:00').getTime();
-
 // 🏢 ADRESULT 로고 URL
 const LOGO_URL = 'https://adresult1.s3.ap-northeast-2.amazonaws.com/%EC%95%A0%EB%93%9C%EB%A6%AC%EC%A0%88%ED%8A%B8+%ED%8C%8C%EB%B9%84%EC%BD%98png.png';
 
+// 📅 세미나 마감 시간 설정 (2026-06-21 오후 10:00)
+const SEMINAR_DEADLINE = new Date('2026-06-21T22:00:00').getTime();
+
 export default function App() {
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState('');
   const [participantName, setParticipantName] = useState('');
   const [isStarted, setIsStarted] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [isExpired, setIsExpired] = useState(false);
   const [data, setData] = useState({
-    practice1: {
-      q1: '',
-      q2: '',
-      q3: '',
-      q4: '',
-      q5: '',
-    },
-    practice2: {
-      q1: '',
-      q2: '',
-      q3: '',
-      q4: '',
-      q5: '',
-      q6: '',
-      q7: '',
-      q8: '',
-      q9: '',
-    },
+    practice1: { q1: '', q2: '', q3: '', q4: '', q5: '' },
+    practice2: { q1: '', q2: '', q3: '', q4: '', q5: '', q6: '' },
     practice3: {
-      check1_result: '',
-      check1_memo: '',
-      check2_result: '',
-      check2_memo: '',
-      check3_result: '',
-      check3_memo: '',
-      check4_result: '',
-      check4_memo: '',
-      check5_result: '',
-      check5_memo: '',
-      check6_result: '',
-      check6_memo: '',
+      check1: { answer: '', memo: '' },
+      check2: { answer: '', memo: '' },
+      check3: { answer: '', memo: '' },
+      check4: { answer: '', memo: '' },
+      check5: { answer: '', memo: '' },
+      check6: { answer: '', memo: '' },
     },
   });
-  const [saved, setSaved] = useState(false);
-  const [generating, setGenerating] = useState(false);
 
-  // 초기 로드: 날짜 확인 + LocalStorage 로드
+  // 📅 날짜 제한 확인
   useEffect(() => {
-    const now = new Date().getTime();
-    if (now > SEMINAR_DEADLINE) {
+    if (Date.now() > SEMINAR_DEADLINE) {
       setIsExpired(true);
-      return;
-    }
-
-    const savedUserId = localStorage.getItem('seminar_userId');
-    const savedName = localStorage.getItem('seminar_name');
-    const savedData = localStorage.getItem('seminar_data');
-
-    if (savedUserId) {
-      setUserId(savedUserId);
-      setParticipantName(savedName || '');
-      if (savedData) {
-        setData(JSON.parse(savedData));
-      }
-      setIsStarted(true);
     }
   }, []);
 
-  // 시작하기 (날짜 체크)
-  const handleStart = () => {
-    const now = new Date().getTime();
-    if (now > SEMINAR_DEADLINE) {
-      setIsExpired(true);
-      return;
-    }
+  // 💾 LocalStorage에서 로드
+  useEffect(() => {
+    const savedUserId = localStorage.getItem('userId');
+    const savedData = localStorage.getItem('seminarData');
+    const savedName = localStorage.getItem('participantName');
 
+    if (savedUserId) {
+      setUserId(savedUserId);
+      setIsStarted(true);
+    }
+    if (savedName) {
+      setParticipantName(savedName);
+    }
+    if (savedData) {
+      try {
+        setData(JSON.parse(savedData));
+      } catch (e) {
+        console.error('데이터 로드 실패:', e);
+      }
+    }
+  }, []);
+
+  // 🎯 세미나 시작
+  const startSeminar = () => {
     if (!participantName.trim()) {
-      alert('병원명을 입력해주세요!');
+      alert('병원명을 입력하세요!');
       return;
     }
 
-    const newUserId = 'user_' + Math.random().toString(36).substr(2, 9);
+    if (isExpired) {
+      alert('세미나 접속 가능 시간이 종료되었습니다.\n(2026-06-21 오후 10:00 이후 접속 불가)');
+      return;
+    }
+
+    const newUserId = `user_${Math.random().toString(36).substr(2, 9)}`;
     setUserId(newUserId);
     setIsStarted(true);
-
-    // LocalStorage에 저장
-    localStorage.setItem('seminar_userId', newUserId);
-    localStorage.setItem('seminar_name', participantName);
+    localStorage.setItem('userId', newUserId);
+    localStorage.setItem('participantName', participantName);
   };
 
-  // 데이터 저장 (LocalStorage + Supabase)
-  const saveData = async () => {
-    if (!userId) return;
-
-    // LocalStorage에 저장
-    localStorage.setItem('seminar_data', JSON.stringify(data));
-
-    // Supabase에도 백업 저장
-    try {
-      await supabase.from('responses').upsert({
-        token: userId,
-        participant_name: participantName,
-        answers: data,
-      });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } catch (error) {
-      console.error('Supabase save error:', error);
-    }
-  };
-
-  // 데이터 변경
+  // 📝 데이터 변경
   const handleChange = (path, value) => {
-    setData(prev => {
-      const keys = path.split('.');
-      let obj = { ...prev };
-      let current = obj;
-
+    const keys = path.split('.');
+    setData((prev) => {
+      const newData = JSON.parse(JSON.stringify(prev));
+      let current = newData;
       for (let i = 0; i < keys.length - 1; i++) {
-        current[keys[i]] = { ...current[keys[i]] };
         current = current[keys[i]];
       }
-
       current[keys[keys.length - 1]] = value;
-      return obj;
+      return newData;
     });
   };
 
-  // PDF 생성
-  const generatePDF = async () => {
-    setGenerating(true);
+  // 💾 Supabase에 저장
+  const saveData = async () => {
+    if (!userId) return;
 
     try {
-      const element = document.createElement('div');
-      element.innerHTML = `
-        <style>
-          body { font-family: Arial, sans-serif; color: #333; }
-          .header { border-bottom: 2px solid #2c3e50; padding-bottom: 20px; margin-bottom: 20px; }
-          .logo { width: 60px; height: auto; margin-bottom: 10px; }
-          .title { font-size: 24px; font-weight: bold; color: #2c3e50; }
-          .subtitle { font-size: 14px; color: #666; margin-top: 5px; }
-          .section { margin: 30px 0; }
-          .section-title { font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 15px; border-left: 4px solid #3498db; padding-left: 10px; }
-          .question { margin: 15px 0; }
-          .q-label { font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
-          .q-answer { background-color: #ecf0f1; padding: 10px; border-radius: 4px; min-height: 40px; white-space: pre-wrap; }
-          .checklist { margin: 15px 0; }
-          .checklist-item { margin: 15px 0; padding: 10px; background-color: #f9fafb; border-radius: 4px; }
-          .checklist-label { font-weight: bold; margin-bottom: 8px; }
-          .checklist-result { margin-bottom: 8px; }
-          .checklist-memo { font-size: 13px; color: #666; }
-          .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #bdc3c7; font-size: 12px; color: #666; }
-        </style>
+      const { error } = await supabase.from('responses').upsert(
+        {
+          token: userId,
+          participant_name: participantName,
+          answers: data,
+        },
+        { onConflict: 'token' }
+      );
 
-        <div class="header">
-          <img src="${LOGO_URL}" class="logo" alt="ADRESULT">
-          <div class="title">AI 병원마케팅 세미나 by ADRESULT</div>
-          <div class="subtitle">병원: ${participantName || '(미기입)'}</div>
-          <div class="subtitle">작성일: ${new Date().toLocaleDateString('ko-KR')}</div>
-        </div>
-
-        <div class="section">
-          <div class="section-title">고객 정의</div>
-          <div class="question">
-            <div class="q-label">1) 가장 많이 오는 환자는?</div>
-            <div class="q-answer">${data.practice1.q1 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">2) 환자는 어떤 순간에 우리를 찾는가?</div>
-            <div class="q-answer">${data.practice1.q2 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">3) 우리의 환자는 무엇을 가장 두려워하는가?</div>
-            <div class="q-answer">${data.practice1.q3 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">4) 환자는 무엇을 원하는가?</div>
-            <div class="q-answer">${data.practice1.q4 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">5) 환자가 병원에 와서 가장 자주 하는 말은?</div>
-            <div class="q-answer">${data.practice1.q5 || '(미기입)'}</div>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-title">우리 병원 USP</div>
-          <div class="question">
-            <div class="q-label">1) 우리가 가장 잘 보는 질환은?</div>
-            <div class="q-answer">${data.practice2.q1 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">2) 치료 철학</div>
-            <div class="q-answer">${data.practice2.q2 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">3) 숫자로 표현하는 우리 병원</div>
-            <div class="q-answer">${data.practice2.q3 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">4) 의료진의 강점</div>
-            <div class="q-answer">${data.practice2.q4 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">5) 병원 시설의 강점</div>
-            <div class="q-answer">${data.practice2.q5 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">6) 환자가 가장 만족하는 부분</div>
-            <div class="q-answer">${data.practice2.q6 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">7) 경쟁병원 대신 우리 병원을 선택하는 이유</div>
-            <div class="q-answer">${data.practice2.q7 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">8) 우리 병원에 맞지 않는 환자는 누구인가?</div>
-            <div class="q-answer">${data.practice2.q8 || '(미기입)'}</div>
-          </div>
-          <div class="question">
-            <div class="q-label">9) 우리 병원 한 문장으로 정의하기</div>
-            <div class="q-answer">${data.practice2.q9 || '(미기입)'}</div>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-title">일관성 체크</div>
-          <div style="font-size: 14px; color: #666; margin-bottom: 15px;">네이버, 구글 등 외부 사이트에서 병원 정보 일관성 체크</div>
-          <div class="checklist">
-            ${generateChecklistHTML(data.practice3, '병원명과 로고가 일치하는가?', 'check1')}
-            ${generateChecklistHTML(data.practice3, '주력 질환이 일치하는가?', 'check2')}
-            ${generateChecklistHTML(data.practice3, '환자 타겟이 일치하는가?', 'check3')}
-            ${generateChecklistHTML(data.practice3, '의료진 소개가 일치하는가?', 'check4')}
-            ${generateChecklistHTML(data.practice3, '병원 시설 안내가 일치하는가?', 'check5')}
-            ${generateChecklistHTML(data.practice3, '진료 시간/연락처/주소가 일치하는가?', 'check6')}
-          </div>
-        </div>
-
-        <div class="footer">
-          <p>이 문서는 AI 병원마케팅 세미나 by ADRESULT 실습을 위해 생성되었습니다.</p>
-        </div>
-      `;
-
-      const opt = {
-        margin: 10,
-        filename: `AI병원마케팅_${participantName || '참가자'}_${new Date().toISOString().split('T')[0]}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
-      };
-
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-      script.onload = () => {
-        window.html2pdf().set(opt).from(element).save();
-        setGenerating(false);
-      };
-      document.head.appendChild(script);
+      if (error) throw error;
+      console.log('✅ 데이터 저장 완료');
     } catch (error) {
-      console.error('PDF error:', error);
-      setGenerating(false);
+      console.error('저장 실패:', error);
     }
   };
 
-  // 🔒 마감 화면
-  if (isExpired) {
+  // 💾 LocalStorage에 저장
+  const saveDataLocal = () => {
+    localStorage.setItem('seminarData', JSON.stringify(data));
+    saveData();
+  };
+
+  useEffect(() => {
+    saveDataLocal();
+  }, [data]);
+
+  // 📄 PDF 다운로드
+  const downloadPDF = () => {
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>AI 병원마케팅 세미나 결과</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .logo { height: 40px; margin-bottom: 10px; }
+          .title { font-size: 24px; font-weight: bold; color: #2c3e50; }
+          .subtitle { font-size: 14px; color: #666; margin-top: 5px; }
+          .hospital-name { font-size: 16px; font-weight: bold; margin: 20px 0 10px 0; }
+          .section-title { font-size: 16px; font-weight: bold; color: #2c3e50; margin-top: 25px; margin-bottom: 15px; border-bottom: 2px solid #3498db; padding-bottom: 8px; }
+          .question { margin-bottom: 20px; }
+          .q-label { font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
+          .answer { margin-left: 10px; padding: 10px; background-color: #f5f5f5; border-left: 3px solid #3498db; }
+          .page-break { page-break-after: always; margin-top: 30px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <img src="${LOGO_URL}" class="logo" alt="ADRESULT">
+          <div class="title">AI 병원마케팅 세미나 by ADRESULT</div>
+          <div class="subtitle">실습 결과지</div>
+        </div>
+
+        <div class="hospital-name">병원명: ${participantName}</div>
+
+        <div class="section-title">실습1 - 우리 환자가 누구인지가 아니라, 왜 지금 우리를 선택하는지 찾아봅니다</div>
+        ${generatePracticeHTML(data.practice1, [
+          { key: 'q1', label: '1. 우리가 집중하고 싶은 대표 환자는 누구인가?' },
+          { key: 'q2', label: '2. 무엇이 환자를 \'바로 지금\' 움직이게 했는가?' },
+          { key: 'q3', label: '3. 환자는 치료를 통해 어떤 변화를 원하는가?' },
+          { key: 'q4', label: '4. 환자는 무엇 때문에 우리 병원에서의 치료를 망설이고, 대신 무엇을 고려하는가?' },
+          { key: 'q5', label: '5. 환자는 무엇을 확인하고, 어떤 말로 표현하는가?' },
+        ])}
+
+        <div class="page-break"></div>
+
+        <div class="section-title">실습2 - 우리 병원의 가치제안 설계하기</div>
+        ${generatePracticeHTML(data.practice2, [
+          { key: 'q1', label: '1. 환자의 어떤 문제에서 우리 병원이 가장 강한가?' },
+          { key: 'q2', label: '2. 환자는 왜 다른 병원이 아니라 우리 병원을 선택했을까?' },
+          { key: 'q3', label: '3. 우리만의 차이는 환자에게 어떤 도움이 되었는가?' },
+          { key: 'q4', label: '4. 우리 병원의 차별성을 만들어내는 구체적인 시스템은 무엇인가?' },
+          { key: 'q5', label: '5. 우리 병원의 차별성을 보여줄 수 있는 객관적인 근거는 무엇인가?' },
+          { key: 'q6', label: '6. 우리 병원 포지셔닝 한 문장 만들기' },
+        ])}
+
+        <div class="page-break"></div>
+
+        <div class="section-title">실습3 - 일관성 체크</div>
+        ${generateChecklistHTML(data.practice3, [
+          { key: 'check1', label: '1. 병원명과 로고가 일치하는가?' },
+          { key: 'check2', label: '2. 주력 질환이 일치하는가?' },
+          { key: 'check3', label: '3. 환자 타겟이 일치하는가?' },
+          { key: 'check4', label: '4. 의료진 소개가 일치하는가?' },
+          { key: 'check5', label: '5. 병원 시설이 일치하는가?' },
+          { key: 'check6', label: '6. 진료 시간/연락처/주소가 일치하는가?' },
+        ])}
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${participantName}_세미나결과.html`;
+    link.click();
+  };
+
+  function generatePracticeHTML(practice, questions) {
+    return questions
+      .map(
+        (item) => `
+      <div class="question">
+        <div class="q-label">${item.label}</div>
+        <div class="answer">${practice[item.key] || '(답변 없음)'}</div>
+      </div>
+    `
+      )
+      .join('');
+  }
+
+  function generateChecklistHTML(practice3, items) {
+    return items
+      .map(
+        (item) => `
+      <div class="question">
+        <div class="q-label">${item.label}</div>
+        <div class="answer">
+          ${practice3[item.key].answer === 'yes' ? '✓ 동일합니다' : '✗ 다릅니다'}
+          ${practice3[item.key].memo ? `<br/>수정 필요사항: ${practice3[item.key].memo}` : ''}
+        </div>
+      </div>
+    `
+      )
+      .join('');
+  }
+
+  // 🔄 초기화
+  const resetData = () => {
+    if (window.confirm('모든 데이터를 삭제하고 처음부터 시작하시겠습니까?')) {
+      setIsStarted(false);
+      setParticipantName('');
+      setUserId('');
+      setActiveTab(0);
+      setData({
+        practice1: { q1: '', q2: '', q3: '', q4: '', q5: '' },
+        practice2: { q1: '', q2: '', q3: '', q4: '', q5: '', q6: '' },
+        practice3: {
+          check1: { answer: '', memo: '' },
+          check2: { answer: '', memo: '' },
+          check3: { answer: '', memo: '' },
+          check4: { answer: '', memo: '' },
+          check5: { answer: '', memo: '' },
+          check6: { answer: '', memo: '' },
+        },
+      });
+      localStorage.removeItem('userId');
+      localStorage.removeItem('seminarData');
+      localStorage.removeItem('participantName');
+    }
+  };
+
+  // 🚫 세미나 종료 확인
+  if (isExpired && !isStarted) {
     return (
       <div style={styles.container}>
-        <div style={styles.expiredCard}>
-          <div style={styles.expiredIcon}>⏰</div>
-          <h1 style={styles.expiredTitle}>세미나 기간이 종료되었습니다</h1>
-          <p style={styles.expiredMessage}>
-            죄송합니다. 세미나 마감일(2026년 6월 21일 오후 10:00)이 지나 더 이상 이용할 수 없습니다.
-          </p>
-          <p style={styles.expiredSubtext}>
-            세미나 중에 이미 다운로드하신 PDF 파일은 계속 참고하실 수 있습니다.
-          </p>
+        <div style={styles.expiredMessage}>
+          <h2>세미나 접속 종료</h2>
+          <p>2026년 6월 21일 오후 10:00 이후로는 접속할 수 없습니다.</p>
+          <p>이전에 저장하신 데이터가 있다면 접속 가능합니다.</p>
         </div>
       </div>
     );
   }
 
-  // 초기 화면 (병원명 입력)
+  // 📱 메인 화면
   if (!isStarted) {
     return (
       <div style={styles.container}>
         <div style={styles.card}>
-          <div style={styles.logoContainer}>
-            <img src={LOGO_URL} alt="ADRESULT" style={styles.logoImage} />
-          </div>
+          <img src={LOGO_URL} style={styles.logo} alt="ADRESULT" />
           <h1 style={styles.title}>AI 병원마케팅 세미나 by ADRESULT</h1>
-          <p style={styles.description}>
-            병원명을 입력하고 실습을 시작하세요.
-          </p>
+          <p style={styles.description}>환자가 우리 병원을 선택하는 이유 설계하기</p>
+
           <input
             type="text"
             placeholder="병원명을 입력하세요"
             value={participantName}
             onChange={(e) => setParticipantName(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleStart()}
             style={styles.input}
-            autoFocus
           />
-          <button onClick={handleStart} style={{ ...styles.primaryButton, marginTop: '20px' }}>
+
+          <button onClick={startSeminar} style={styles.primaryButton}>
             실습 시작
           </button>
+
+          <p style={styles.notice}>
+            💡 팁: 병원 전체 환자가 아닌, 핵심 질환 1개와 최근 실제로 만난 대표 환자 1명을 기준으로 작성하세요.
+          </p>
         </div>
       </div>
     );
   }
 
-  // 실습 화면
+  // 🎯 실습 화면
   return (
     <div style={styles.container}>
-      <div style={styles.card}>
-        <div style={styles.header}>
-          <div style={styles.logoSmallContainer}>
-            <img src={LOGO_URL} alt="ADRESULT" style={styles.logoSmall} />
-          </div>
-          <h1 style={styles.title}>AI 병원마케팅 세미나 by ADRESULT</h1>
-          <p style={styles.participantInfo}>병원: {participantName}</p>
+      <div style={styles.header}>
+        <img src={LOGO_URL} style={styles.headerLogo} alt="ADRESULT" />
+        <h1 style={styles.headerTitle}>AI 병원마케팅 세미나 by ADRESULT</h1>
+        <p style={styles.userId}>ID: {userId}</p>
+      </div>
+
+      <div style={styles.tabs}>
+        <button
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 0 ? styles.tabButtonActive : styles.tabButtonInactive),
+          }}
+          onClick={() => setActiveTab(0)}
+        >
+          실습1
+        </button>
+        <button
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 1 ? styles.tabButtonActive : styles.tabButtonInactive),
+          }}
+          onClick={() => setActiveTab(1)}
+        >
+          실습2
+        </button>
+        <button
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 2 ? styles.tabButtonActive : styles.tabButtonInactive),
+          }}
+          onClick={() => setActiveTab(2)}
+        >
+          실습3
+        </button>
+      </div>
+
+      {/* 실습1 탭 */}
+      {activeTab === 0 && (
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>실습1</h2>
+          <p style={styles.description}>우리 환자가 누구인지가 아니라, 왜 지금 우리를 선택하는지 찾아봅니다.</p>
+
+          {[
+            { key: 'q1', label: '1. 우리가 집중하고 싶은 대표 환자는 누구인가?', guide: '연령, 성별, 직업과 생활패턴, 질환이나 증상의 상태, 기존 치료 경험 등 최근 실제로 만난 환자 중, 우리 병원이 앞으로 더 많이 만나고 싶은 대표 환자 한 명을 찾아보세요.' },
+            { key: 'q2', label: '2. 무엇이 환자를 \'바로 지금\' 움직이게 했는가?', guide: '환자는 이전부터 불편했는데 왜 이제 병원을 찾았나요? 더 이상 치료를 미룰 수 없게 만든 사건은 무엇인가요? 증상 악화, 가족행사, 직장 문제, 타 병원 치료 실패 중 무엇이 우리 병원의 치료를 결정하게 했을까요?' },
+            { key: 'q3', label: '3. 환자는 치료를 통해 어떤 변화를 원하는가?', guide: '단순히 \'낫고 싶다\'가 아닌 구체적인 변화를 적어주세요. 예를들어, "허리가 낫고 싶다"가 아니라 "장거리 운전을 다시 하고, 수술 없이 빨리 업무에 복귀하며, 가족에게 부담을 주지 않고 싶다." 같은 구체적인 변화를 생각해 보세요.' },
+            { key: 'q4', label: '4. 환자는 무엇 때문에 우리 병원에서의 치료를 망설이고, 대신 무엇을 고려하는가?', guide: '치료 통증이나 부작용, 비용, 회복기간, 이전 치료 실패, 배우자나 자녀의 동의, 타 병원, 대학병원, 자가관리, 치료 미루기 등 치료를 망설이는 가장 큰 장벽은 무엇인가요?' },
+            { key: 'q5', label: '5. 환자는 무엇을 확인하고, 어떤 말로 표현하는가?', guide: '환자가 병원을 고를 때 반드시 확인하는 건 무엇인가요? 의사의 경력, 치료 사례, 장비, 비용, 후기, 회복기간 중 무엇이 환자에게 가장 중요한가요? 환자는 우리 병원의 무엇을 보고 신뢰를 얻나요? 상담실에서 가장 묻는 질문, 최종적으로 치료를 결정하며 하는 말들을 떠올리며 자세히 적어보세요.' },
+          ].map((item) => (
+            <div key={item.key} style={styles.question}>
+              <label style={styles.label}>{item.label}</label>
+              <p style={styles.guide}>가이드 : {item.guide}</p>
+              <textarea
+                value={data.practice1[item.key]}
+                onChange={(e) => handleChange(`practice1.${item.key}`, e.target.value)}
+                onBlur={saveDataLocal}
+                style={styles.textarea}
+              />
+            </div>
+          ))}
         </div>
+      )}
 
-        {/* 탭 메뉴 */}
-        <div style={styles.tabContainer}>
-          <button
-            style={{
-              ...styles.tabButton,
-              ...(activeTab === 0 ? styles.tabButtonActive : styles.tabButtonInactive),
-            }}
-            onClick={() => setActiveTab(0)}
-          >
-            고객 정의
-          </button>
-          <button
-            style={{
-              ...styles.tabButton,
-              ...(activeTab === 1 ? styles.tabButtonActive : styles.tabButtonInactive),
-            }}
-            onClick={() => setActiveTab(1)}
-          >
-            우리 병원 USP
-          </button>
-          <button
-            style={{
-              ...styles.tabButton,
-              ...(activeTab === 2 ? styles.tabButtonActive : styles.tabButtonInactive),
-            }}
-            onClick={() => setActiveTab(2)}
-          >
-            일관성 체크
-          </button>
+      {/* 실습2 탭 */}
+      {activeTab === 1 && (
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>실습2</h2>
+          <p style={styles.description}>우리 병원의 가치제안 설계하기</p>
+
+          {[
+            { key: 'q1', label: '1. 환자의 어떤 문제에서 우리 병원이 가장 강한가?', guide: '"허리디스크를 잘 본다"가 아니라 "수술과 장기 휴직은 피하고 싶지만 빠른 업무 복귀가 필요한 장시간 운전 직군의 초기·중등도 허리디스크 환자에게 강하다"' },
+            { key: 'q2', label: '2. 환자는 왜 다른 병원이 아니라 우리 병원을 선택했을까?(우리 병원만의 차별성)', guide: '환자는 왜 다른 병원이 아니라 우리 병원을 선택했을까요? 진료 과정, 설명, 치료, 관리 중 무엇이 달랐나요? 그 차이로 인해 환자는 어떤 이점을 얻었나요?' },
+            { key: 'q3', label: '3. 우리만의 차이는 환자에게 어떤 도움이 되었는가?', guide: '2번에서의 우리 병원 차별성은 환자에게 어떤 도움이 되었는지 적어보세요. 예를들어 원장이 직접 검사 결과를 설명한다는 차이가 있으면, 이로 인해 환자는 상태를 정확히 이해하고 치료를 결정하는데에 도움이 되었을 것입니다.' },
+            { key: 'q4', label: '4. 우리 병원의 차별성을 만들어내는 구체적인 시스템은 무엇인가?', guide: '우리 병원의 차별성이 어떤 과정으로 만들어지는지 적어보세요. 예를 들어 환자가 치료 방향을 쉽게 이해할 수 있도록 MRI 결과를 원장이 직접 설명 한다거나, 치료 계획을 그림으로 안내 한다거나 하는 등 우리 만의 차별성을 만드는 시스템을 적어보세요.' },
+            { key: 'q5', label: '5. 우리 병원의 차별성을 보여줄 수 있는 객관적인 근거는 무엇인가?', guide: '우리 병원의 차별성이 단순한 주장에 그치지 않도록 객관적으로 보여줄 수 있는 근거를 적어보세요. 의료진 경력, 특정 질환 진료 경험, 환자 사례, 검사·치료 프로토콜, 장비, 학술활동, 환자 후기, 운영 데이터 등 환자가 신뢰할 수 있는 근거를 작성해보세요.' },
+            { key: 'q6', label: '6. 우리 병원 포지셔닝 한 문장 만들기', guide: '________한 상황에 놓인 ________ 환자에게, 우리 병원은 ________을 통해 ________할 수 있도록 돕는 병원이다. 다른 대안과 달리 우리는 ________하며, 이는 ________으로 증명할 수 있다.' },
+          ].map((item) => (
+            <div key={item.key} style={styles.question}>
+              <label style={styles.label}>{item.label}</label>
+              <p style={styles.guide}>가이드 : {item.guide}</p>
+              <textarea
+                value={data.practice2[item.key]}
+                onChange={(e) => handleChange(`practice2.${item.key}`, e.target.value)}
+                onBlur={saveDataLocal}
+                style={styles.textarea}
+              />
+            </div>
+          ))}
         </div>
+      )}
 
-        {/* 고객 정의 탭 */}
-        {activeTab === 0 && (
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>고객 정의</h2>
+      {/* 실습3 탭 */}
+      {activeTab === 2 && (
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>실습3</h2>
+          <p style={styles.description}>일관성 체크</p>
+          <p style={styles.notice}>네이버, 구글 등 외부 사이트에서 병원 정보가 모두 일치하는지 확인하세요.</p>
 
-            <div style={styles.question}>
-              <label style={styles.label}>1) 가장 많이 오는 환자는?</label>
-              <span style={styles.hint}>(연령, 성별, 직업, 생활패턴 등)</span>
-              <textarea
-                value={data.practice1.q1}
-                onChange={(e) => handleChange('practice1.q1', e.target.value)}
-                onBlur={saveData}
-                style={styles.textarea}
-              />
-            </div>
-
-            <div style={styles.question}>
-              <label style={styles.label}>2) 환자는 어떤 순간에 우리를 찾는가?</label>
-              <textarea
-                value={data.practice1.q2}
-                onChange={(e) => handleChange('practice1.q2', e.target.value)}
-                onBlur={saveData}
-                style={styles.textarea}
-              />
-            </div>
-
-            <div style={styles.question}>
-              <label style={styles.label}>3) 우리의 환자는 무엇을 가장 두려워하는가?</label>
-              <textarea
-                value={data.practice1.q3}
-                onChange={(e) => handleChange('practice1.q3', e.target.value)}
-                onBlur={saveData}
-                style={styles.textarea}
-              />
-            </div>
-
-            <div style={styles.question}>
-              <label style={styles.label}>4) 환자는 무엇을 원하는가?</label>
-              <textarea
-                value={data.practice1.q4}
-                onChange={(e) => handleChange('practice1.q4', e.target.value)}
-                onBlur={saveData}
-                style={styles.textarea}
-              />
-            </div>
-
-            <div style={styles.question}>
-              <label style={styles.label}>5) 환자가 병원에 와서 가장 자주 하는 말은?</label>
-              <textarea
-                value={data.practice1.q5}
-                onChange={(e) => handleChange('practice1.q5', e.target.value)}
-                onBlur={saveData}
-                style={styles.textarea}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* 우리 병원 USP 탭 */}
-        {activeTab === 1 && (
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>우리 병원 USP</h2>
-
+          <div style={styles.checklist}>
             {[
-              { key: 'q1', label: '1) 우리가 가장 잘 보는 질환은?', hint: '' },
-              { key: 'q2', label: '2) 환자와 상담할 때 어떤 멘트에 환자들이 치료를 결정하던가요?', hint: '' },
-              { key: 'q3', label: '3) 경쟁병원의 단점은? 경쟁병원 대신 우리 병원을 선택하는 이유는?', hint: '' },
-              { key: 'q4', label: '4) 환자의 두려움을 우리 병원에서는 어떻게 해결하나요?', hint: '' },
-              { key: 'q5', label: '5) 숫자로 표현하는 우리 병원', hint: '(예: 치료 1만례)' },
-              { key: 'q6', label: '6) 의료진의 강점', hint: '' },
+              { key: 'check1', label: '1. 병원명과 로고가 일치하는가?' },
+              { key: 'check2', label: '2. 주력 질환이 일치하는가?' },
+              { key: 'check3', label: '3. 환자 타겟이 일치하는가?' },
+              { key: 'check4', label: '4. 의료진 소개가 일치하는가?' },
+              { key: 'check5', label: '5. 병원 시설이 일치하는가?' },
+              { key: 'check6', label: '6. 진료 시간/연락처/주소가 일치하는가?' },
             ].map((item) => (
-              <div key={item.key} style={styles.question}>
-                <label style={styles.label}>{item.label}</label>
-                {item.hint && <span style={styles.hint}>{item.hint}</span>}
+              <div key={item.key} style={styles.checkItem}>
+                <p style={styles.checkLabel}>{item.label}</p>
+                <div style={styles.checkOptions}>
+                  <label style={styles.checkOption}>
+                    <input
+                      type="radio"
+                      name={item.key}
+                      value="yes"
+                      checked={data.practice3[item.key].answer === 'yes'}
+                      onChange={() => handleChange(`practice3.${item.key}.answer`, 'yes')}
+                    />
+                    ✓ 동일합니다
+                  </label>
+                  <label style={styles.checkOption}>
+                    <input
+                      type="radio"
+                      name={item.key}
+                      value="no"
+                      checked={data.practice3[item.key].answer === 'no'}
+                      onChange={() => handleChange(`practice3.${item.key}.answer`, 'no')}
+                    />
+                    ✗ 다릅니다
+                  </label>
+                </div>
                 <textarea
-                  value={data.practice2[item.key]}
-                  onChange={(e) => handleChange(`practice2.${item.key}`, e.target.value)}
-                  onBlur={saveData}
-                  style={styles.textarea}
+                  placeholder="수정 필요사항"
+                  value={data.practice3[item.key].memo}
+                  onChange={(e) => handleChange(`practice3.${item.key}.memo`, e.target.value)}
+                  onBlur={saveDataLocal}
+                  style={styles.memoTextarea}
                 />
               </div>
             ))}
           </div>
-        )}
-
-        {/* 일관성 체크 탭 */}
-        {activeTab === 2 && (
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>일관성 체크</h2>
-            <p style={styles.description}>
-              네이버, 구글 등에서 병원명을 검색하여 나오는 정보들이 모두 일치하는지 확인하세요.
-            </p>
-
-            <div style={styles.checklist}>
-              {[
-                { key: 'check1', label: '병원명과 로고가 일치하는가?' },
-                { key: 'check2', label: '주력 질환이 일치하는가?' },
-                { key: 'check3', label: '환자 타겟이 일치하는가?' },
-                { key: 'check4', label: '의료진 소개가 일치하는가?' },
-                { key: 'check5', label: '병원 시설 안내가 일치하는가?' },
-                { key: 'check6', label: '진료 시간/연락처/주소가 일치하는가?' },
-              ].map((item) => (
-                <div key={item.key} style={styles.checklistItem}>
-                  <div style={styles.checklistLabel}>{item.label}</div>
-                  
-                  <div style={styles.checklistOptions}>
-                    <label style={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name={item.key}
-                        value="o"
-                        checked={data.practice3[`${item.key}_result`] === 'o'}
-                        onChange={(e) => {
-                          handleChange(`practice3.${item.key}_result`, 'o');
-                          if (e.target.value === 'o') {
-                            handleChange(`practice3.${item.key}_memo`, '');
-                          }
-                          saveData();
-                        }}
-                      />
-                      <span style={styles.radioText}>✓ 동일합니다</span>
-                    </label>
-                    
-                    <label style={styles.radioLabel}>
-                      <input
-                        type="radio"
-                        name={item.key}
-                        value="x"
-                        checked={data.practice3[`${item.key}_result`] === 'x'}
-                        onChange={(e) => {
-                          handleChange(`practice3.${item.key}_result`, 'x');
-                          saveData();
-                        }}
-                      />
-                      <span style={styles.radioText}>✗ 다릅니다</span>
-                    </label>
-                  </div>
-
-                  {/* X를 선택했을 때만 메모칸 표시 */}
-                  {data.practice3[`${item.key}_result`] === 'x' && (
-                    <div style={styles.memoSection}>
-                      <label style={styles.memoLabel}>수정 필요사항:</label>
-                      <textarea
-                        value={data.practice3[`${item.key}_memo`]}
-                        onChange={(e) => handleChange(`practice3.${item.key}_memo`, e.target.value)}
-                        onBlur={saveData}
-                        placeholder="어떤 부분을 수정해야 하는지 입력하세요"
-                        style={styles.memoInput}
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 저장 상태 */}
-        {saved && (
-          <div style={styles.savedNotification}>
-            ✓ 저장되었습니다
-          </div>
-        )}
-
-        {/* 버튼 */}
-        <div style={styles.buttonGroup}>
-          <button
-            onClick={generatePDF}
-            disabled={generating}
-            style={styles.primaryButton}
-          >
-            {generating ? '생성 중...' : '📄 PDF 다운로드'}
-          </button>
-          <button
-            onClick={() => {
-              localStorage.removeItem('seminar_userId');
-              localStorage.removeItem('seminar_name');
-              localStorage.removeItem('seminar_data');
-              setIsStarted(false);
-              setParticipantName('');
-              setUserId(null);
-              setActiveTab(0);
-            }}
-            style={styles.textButton}
-          >
-            다른 병원 시작
-          </button>
         </div>
+      )}
+
+      {/* 버튼들 */}
+      <div style={styles.buttonGroup}>
+        <button onClick={downloadPDF} style={styles.primaryButton}>
+          📄 PDF 다운로드
+        </button>
+        <button onClick={resetData} style={styles.secondaryButton}>
+          🔄 다른 병원 시작
+        </button>
       </div>
     </div>
   );
 }
 
-// PDF용 체크리스트 HTML 생성
-function generateChecklistHTML(practice3, label, key) {
-  const result = practice3[`${key}_result`];
-  const memo = practice3[`${key}_memo`];
-  
-  return `
-    <div class="checklist-item">
-      <div class="checklist-label">${label}</div>
-      <div class="checklist-result">
-        ${result === 'o' ? '✓ 동일합니다' : result === 'x' ? '✗ 다릅니다' : '(미선택)'}
-      </div>
-      ${result === 'x' && memo ? `<div class="checklist-memo"><strong>수정 필요사항:</strong> ${memo}</div>` : ''}
-    </div>
-  `;
-}
-
+// 🎨 스타일
 const styles = {
   container: {
-    minHeight: '100vh',
-    backgroundColor: '#f5f7fa',
+    maxWidth: '900px',
+    margin: '0 auto',
     padding: '20px',
-    fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: '#f9f9f9',
+    minHeight: '100vh',
   },
   card: {
-    maxWidth: '900px',
-    width: '100%',
-    backgroundColor: 'white',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    backgroundColor: '#fff',
     padding: '40px',
-  },
-  expiredCard: {
-    maxWidth: '600px',
-    width: '100%',
-    backgroundColor: 'white',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    padding: '60px 40px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
     textAlign: 'center',
   },
-  expiredIcon: {
-    fontSize: '64px',
+  logo: {
+    height: '60px',
     marginBottom: '20px',
-  },
-  expiredTitle: {
-    fontSize: '28px',
-    fontWeight: '700',
-    color: '#e74c3c',
-    marginBottom: '20px',
-  },
-  expiredMessage: {
-    fontSize: '16px',
-    color: '#555',
-    lineHeight: '1.6',
-    marginBottom: '15px',
-  },
-  expiredSubtext: {
-    fontSize: '14px',
-    color: '#999',
-    fontStyle: 'italic',
-  },
-  logoContainer: {
-    textAlign: 'center',
-    marginBottom: '20px',
-  },
-  logoImage: {
-    height: '80px',
-    width: 'auto',
-  },
-  logoSmallContainer: {
-    marginBottom: '10px',
-  },
-  logoSmall: {
-    height: '50px',
-    width: 'auto',
-  },
-  header: {
-    marginBottom: '30px',
-    borderBottom: '2px solid #e8eef5',
-    paddingBottom: '20px',
   },
   title: {
-    fontSize: '32px',
-    fontWeight: '700',
+    fontSize: '28px',
+    fontWeight: 'bold',
     color: '#2c3e50',
-    margin: '0 0 10px 0',
-  },
-  participantInfo: {
-    fontSize: '14px',
-    color: '#666',
-    margin: '5px 0 0 0',
+    margin: '10px 0',
   },
   description: {
-    fontSize: '16px',
-    color: '#555',
-    lineHeight: '1.6',
-    marginBottom: '20px',
-  },
-  tabContainer: {
-    display: 'flex',
-    gap: '10px',
+    fontSize: '14px',
+    color: '#666',
     marginBottom: '30px',
-    borderBottom: '2px solid #e8eef5',
+  },
+  input: {
+    width: '100%',
+    padding: '12px',
+    fontSize: '16px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    marginBottom: '20px',
+    boxSizing: 'border-box',
+  },
+  primaryButton: {
+    backgroundColor: '#3498db',
+    color: '#fff',
+    padding: '12px 30px',
+    fontSize: '16px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginRight: '10px',
+    marginBottom: '10px',
+  },
+  secondaryButton: {
+    backgroundColor: '#95a5a6',
+    color: '#fff',
+    padding: '12px 30px',
+    fontSize: '16px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginBottom: '10px',
+  },
+  notice: {
+    fontSize: '12px',
+    color: '#e74c3c',
+    marginTop: '20px',
+    padding: '10px',
+    backgroundColor: '#fff5f5',
+    borderRadius: '5px',
+  },
+  header: {
+    textAlign: 'center',
+    marginBottom: '30px',
+    paddingBottom: '20px',
+    borderBottom: '2px solid #3498db',
+  },
+  headerLogo: {
+    height: '40px',
+    marginBottom: '10px',
+  },
+  headerTitle: {
+    fontSize: '24px',
+    color: '#2c3e50',
+    margin: '0',
+  },
+  userId: {
+    fontSize: '12px',
+    color: '#999',
+    margin: '8px 0 0 0',
+  },
+  tabs: {
+    display: 'flex',
+    marginBottom: '20px',
+    borderBottom: '2px solid #ddd',
+    gap: '10px',
   },
   tabButton: {
     padding: '12px 20px',
-    fontSize: '15px',
-    fontWeight: '600',
+    fontSize: '14px',
     border: 'none',
     cursor: 'pointer',
-    borderRadius: '6px 6px 0 0',
-    transition: 'all 0.3s',
+    backgroundColor: 'transparent',
+    borderBottom: '3px solid transparent',
   },
   tabButtonActive: {
-    backgroundColor: '#3498db',
-    color: 'white',
+    color: '#3498db',
     borderBottom: '3px solid #3498db',
+    fontWeight: 'bold',
   },
   tabButtonInactive: {
-    backgroundColor: '#f5f5f5',
-    color: '#666',
+    color: '#999',
   },
   section: {
-    marginBottom: '40px',
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '5px',
+    marginBottom: '20px',
   },
   sectionTitle: {
-    fontSize: '20px',
-    fontWeight: '600',
+    fontSize: '18px',
+    fontWeight: 'bold',
     color: '#2c3e50',
-    marginBottom: '20px',
-    borderLeft: '4px solid #3498db',
-    paddingLeft: '12px',
+    marginBottom: '10px',
   },
   question: {
     marginBottom: '25px',
   },
   label: {
     display: 'block',
-    fontSize: '15px',
-    fontWeight: '600',
-    color: '#2c3e50',
+    fontWeight: 'bold',
     marginBottom: '5px',
+    color: '#2c3e50',
   },
-  hint: {
-    fontSize: '13px',
+  guide: {
+    fontSize: '12px',
     color: '#999',
-    display: 'block',
+    fontStyle: 'italic',
     marginBottom: '8px',
-  },
-  input: {
-    width: '100%',
-    padding: '12px 14px',
-    fontSize: '16px',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
-    boxSizing: 'border-box',
-    fontFamily: 'inherit',
+    padding: '8px',
+    backgroundColor: '#f5f5f5',
+    borderRadius: '3px',
   },
   textarea: {
     width: '100%',
-    padding: '12px 14px',
-    fontSize: '16px',
+    padding: '10px',
+    fontSize: '14px',
     border: '1px solid #ddd',
-    borderRadius: '6px',
+    borderRadius: '5px',
+    minHeight: '100px',
     boxSizing: 'border-box',
-    fontFamily: 'inherit',
-    height: '100px',
-    resize: 'vertical',
+    fontFamily: 'Arial, sans-serif',
+  },
+  memoTextarea: {
+    width: '100%',
+    padding: '10px',
+    fontSize: '14px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    minHeight: '60px',
+    boxSizing: 'border-box',
+    fontFamily: 'Arial, sans-serif',
   },
   checklist: {
-    backgroundColor: '#f9fafb',
-    padding: '20px',
-    borderRadius: '8px',
+    backgroundColor: '#fff',
   },
-  checklistItem: {
-    backgroundColor: 'white',
+  checkItem: {
+    marginBottom: '20px',
     padding: '15px',
-    marginBottom: '15px',
-    borderRadius: '6px',
-    border: '1px solid #e8eef5',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '5px',
   },
-  checklistLabel: {
-    fontWeight: '600',
+  checkLabel: {
+    fontWeight: 'bold',
+    marginBottom: '10px',
     color: '#2c3e50',
-    marginBottom: '12px',
-    fontSize: '15px',
   },
-  checklistOptions: {
+  checkOptions: {
     display: 'flex',
     gap: '20px',
-    marginBottom: '12px',
+    marginBottom: '10px',
   },
-  radioLabel: {
-    display: 'flex',
-    alignItems: 'center',
+  checkOption: {
+    fontSize: '14px',
     cursor: 'pointer',
-    fontSize: '14px',
-  },
-  radioText: {
-    marginLeft: '8px',
-    color: '#333',
-  },
-  memoSection: {
-    marginTop: '12px',
-    paddingTop: '12px',
-    borderTop: '1px solid #e8eef5',
-    backgroundColor: '#fafafa',
-    padding: '12px',
-    borderRadius: '4px',
-  },
-  memoLabel: {
-    display: 'block',
-    fontSize: '13px',
-    fontWeight: '600',
-    color: '#e74c3c',
-    marginBottom: '8px',
-  },
-  memoInput: {
-    width: '100%',
-    padding: '10px 12px',
-    fontSize: '14px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-    fontFamily: 'inherit',
-    height: '70px',
-    resize: 'vertical',
   },
   buttonGroup: {
-    display: 'flex',
-    gap: '12px',
+    textAlign: 'center',
     marginTop: '30px',
   },
-  primaryButton: {
-    flex: 1,
-    padding: '14px 20px',
-    fontSize: '16px',
-    fontWeight: '600',
-    backgroundColor: '#3498db',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s',
-  },
-  textButton: {
-    padding: '14px 20px',
-    fontSize: '14px',
-    backgroundColor: 'transparent',
-    color: '#3498db',
-    border: '1px solid #3498db',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontWeight: '600',
-  },
-  savedNotification: {
-    backgroundColor: '#d4edda',
-    color: '#155724',
-    padding: '12px 16px',
-    borderRadius: '6px',
-    marginBottom: '20px',
-    fontSize: '14px',
-    fontWeight: '500',
+  expiredMessage: {
+    backgroundColor: '#fff',
+    padding: '40px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+    textAlign: 'center',
+    color: '#e74c3c',
   },
 };
