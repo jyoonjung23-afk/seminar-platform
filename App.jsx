@@ -11,7 +11,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const SEMINAR_DEADLINE = new Date('2026-06-21T22:00:00').getTime();
 
 // 🏢 ADRESULT 로고 URL
-const LOGO_URL = '/adresult-logo.png';
+const LOGO_URL = 'https://adresult1.s3.ap-northeast-2.amazonaws.com/%EC%95%A0%EB%93%9C%EB%A6%AC%EC%A0%88%ED%8A%B8+%ED%8C%8C%EB%B9%84%EC%BD%98png.png';
 
 export default function App() {
   const [userId, setUserId] = useState(null);
