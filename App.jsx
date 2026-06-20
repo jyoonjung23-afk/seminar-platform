@@ -462,12 +462,12 @@ export default function App() {
 
             <div style={styles.checklist}>
               {[
-                { key: 'check1', label: '정의가 동일한가?' },
+                { key: 'check1', label: '병원명과 로고가 일치하는가?' },
                 { key: 'check2', label: '주력 질환이 일치하는가?' },
                 { key: 'check3', label: '환자 타겟이 일치하는가?' },
-                { key: 'check4', label: '치료 철학이 일치하는가?' },
-                { key: 'check5', label: '의료진 소개가 일치하는가?' },
-                { key: 'check6', label: '병원의 정보가 일치하는가?' },
+                { key: 'check4', label: '의료진 소개가 일치하는가?' },
+                { key: 'check5', label: '병원 시설이 일치하는가?' },
+                { key: 'check6', label: '진료 시간/연락처/주소가 일치하는가?' },
               ].map((item) => (
                 <div key={item.key} style={styles.checklistItem}>
                   <div style={styles.checklistLabel}>{item.label}</div>
