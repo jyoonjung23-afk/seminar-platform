@@ -337,7 +337,7 @@ export default function App() {
       {/* 실습1 탭 */}
       {activeTab === 0 && (
         <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>실습1</h2>
+          <h2 style={styles.sectionTitle}>실습 1.</h2>
           <p style={styles.description}>우리 환자가 누구인지가 아니라, 왜 지금 우리를 선택하는지 찾아봅니다.</p>
           
           <div style={styles.exampleBox}>
@@ -350,24 +350,170 @@ export default function App() {
             </p>
           </div>
 
-          {[
-            { key: 'q1', label: '1. 우리가 집중하고 싶은 대표 환자는 누구인가?', guide: '연령, 성별, 직업과 생활패턴, 질환이나 증상의 상태, 기존 치료 경험 등 최근 실제로 만난 환자 중, 우리 병원이 앞으로 더 많이 만나고 싶은 대표 환자 한 명을 찾아보세요.' },
-            { key: 'q2', label: '2. 무엇이 환자를 \'바로 지금\' 움직이게 했는가?', guide: '환자는 이전부터 불편했는데 왜 이제 병원을 찾았나요? 더 이상 치료를 미룰 수 없게 만든 사건은 무엇인가요? 증상 악화, 가족행사, 직장 문제, 타 병원 치료 실패 중 무엇이 우리 병원의 치료를 결정하게 했을까요?' },
-            { key: 'q3', label: '3. 환자는 치료를 통해 어떤 변화를 원하는가?', guide: '단순히 \'낫고 싶다\'가 아닌 구체적인 변화를 적어주세요. 예를들어, "허리가 낫고 싶다"가 아니라 "장거리 운전을 다시 하고, 수술 없이 빨리 업무에 복귀하며, 가족에게 부담을 주지 않고 싶다." 같은 구체적인 변화를 생각해 보세요.' },
-            { key: 'q4', label: '4. 환자는 무엇 때문에 우리 병원에서의 치료를 망설이고, 대신 무엇을 고려하는가?', guide: '치료 통증이나 부작용, 비용, 회복기간, 이전 치료 실패, 배우자나 자녀의 동의, 타 병원, 대학병원, 자가관리, 치료 미루기 등 치료를 망설이는 가장 큰 장벽은 무엇인가요?' },
-            { key: 'q5', label: '5. 환자는 무엇을 확인하고, 어떤 말로 표현하는가?', guide: '환자가 병원을 고를 때 반드시 확인하는 건 무엇인가요? 의사의 경력, 치료 사례, 장비, 비용, 후기, 회복기간 중 무엇이 환자에게 가장 중요한가요? 환자는 우리 병원의 무엇을 보고 신뢰를 얻나요? 상담실에서 가장 묻는 질문, 최종적으로 치료를 결정하며 하는 말들을 떠올리며 자세히 적어보세요.' },
-          ].map((item) => (
-            <div key={item.key} style={styles.question}>
-              <label style={styles.label}>{item.label}</label>
-              <p style={styles.guide}>가이드 : {item.guide}</p>
-              <textarea
-                value={data.practice1[item.key]}
-                onChange={(e) => handleChange(`practice1.${item.key}`, e.target.value)}
-                onBlur={saveDataLocal}
-                style={styles.textarea}
-              />
+          {/* 질문 1 */}
+          <div style={styles.questionBlock}>
+            <h3 style={styles.questionNumber}>1. 우리가 집중하고 싶은 대표 환자는 누구인가?</h3>
+            
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[작성 항목]</strong>
             </div>
-          ))}
+            <p style={styles.guideText}>
+              연령·성별<br/>
+              직업과 생활패턴<br/>
+              질환이나 증상의 상태<br/>
+              기존 치료 경험<br/>
+              가족 등 의사결정에 영향을 미치는 사람
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[질문 문장]</strong>
+            </div>
+            <p style={styles.guideText}>
+              최근 실제로 만난 환자 중, 우리 병원이 앞으로 더 많이 만나고 싶은 대표 환자 한 명은 누구인가?
+            </p>
+
+            <textarea
+              value={data.practice1.q1}
+              onChange={(e) => handleChange('practice1.q1', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+            />
+          </div>
+
+          {/* 질문 2 */}
+          <div style={styles.questionBlock}>
+            <h3 style={styles.questionNumber}>2. 무엇이 환자를 '바로 지금' 움직이게 했는가?</h3>
+            
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[보조 질문]</strong>
+            </div>
+            <p style={styles.guideText}>
+              이전부터 불편했는데 왜 이제 병원을 찾았는가?<br/>
+              더 이상 미룰 수 없게 만든 사건은 무엇인가?<br/>
+              증상 악화, 가족행사, 직장 문제, 검진 결과, 타 병원 치료 실패 중 무엇이 결정적이었는가?<br/>
+              검색이나 전화 직전에는 무슨 일이 있었는가?
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[질문 문장]</strong>
+            </div>
+            <p style={styles.guideText}>
+              환자가 더 이상 치료를 미루지 않고 병원을 찾게 만든 결정적인 사건은 무엇인가?
+            </p>
+
+            <textarea
+              value={data.practice1.q2}
+              onChange={(e) => handleChange('practice1.q2', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+            />
+          </div>
+
+          {/* 질문 3 */}
+          <div style={styles.questionBlock}>
+            <h3 style={styles.questionNumber}>3. 환자는 치료를 통해 어떤 변화를 원하는가?</h3>
+            
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[작성 항목]</strong>
+            </div>
+            <p style={styles.guideText}>
+              기능적 변화: 무엇을 다시 할 수 있어야 하는가?<br/>
+              감정적 변화: 어떤 걱정과 불안에서 벗어나고 싶은가?<br/>
+              사회적 변화: 가족이나 직장, 타인 앞에서 어떻게 보이고 싶은가?
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[질문 문장]</strong>
+            </div>
+            <p style={styles.guideText}>
+              치료가 성공했다고 느끼려면 환자의 생활·감정·대인관계에서 무엇이 달라져야 하는가?
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[예]</strong>
+            </div>
+            <p style={styles.guideText}>
+              "허리가 낫고 싶다"가 아니라<br/>
+              "장거리 운전을 다시 하고, 수술 없이 빨리 업무에 복귀하며, 가족에게 부담을 주지 않고 싶다."
+            </p>
+
+            <textarea
+              value={data.practice1.q3}
+              onChange={(e) => handleChange('practice1.q3', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+            />
+          </div>
+
+          {/* 질문 4 */}
+          <div style={styles.questionBlock}>
+            <h3 style={styles.questionNumber}>4. 환자는 무엇 때문에 망설이며, 대신 무엇을 고려하는가?</h3>
+            
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[보조 질문]</strong>
+            </div>
+            <p style={styles.guideText}>
+              치료 통증이나 부작용이 걱정되는가?<br/>
+              비용보다 '효과가 없을 가능성'을 더 걱정하는가?<br/>
+              회복기간과 업무 중단이 부담되는가?<br/>
+              이전 치료 실패 때문에 불신하는가?<br/>
+              배우자나 자녀의 동의가 필요한가?<br/>
+              다른 병원, 대학병원, 약, 자가관리, 치료 미루기 중 무엇을 고려하는가?
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[질문 문장]</strong>
+            </div>
+            <p style={styles.guideText}>
+              환자가 예약과 치료를 망설이게 만드는 가장 큰 장벽은 무엇이며, 우리 병원 대신 어떤 대안을 고려하는가?
+            </p>
+
+            <div style={styles.noteBox}>
+              <strong style={{color: '#2c3e50'}}>[참고]</strong>
+              <p style={styles.noteText}>
+                경쟁자는 반드시 다른 병원만은 아닙니다. '아무것도 하지 않고 미루기'도 매우 강력한 경쟁 대안입니다.
+              </p>
+            </div>
+
+            <textarea
+              value={data.practice1.q4}
+              onChange={(e) => handleChange('practice1.q4', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+            />
+          </div>
+
+          {/* 질문 5 */}
+          <div style={styles.questionBlock}>
+            <h3 style={styles.questionNumber}>5. 환자는 무엇을 확인하고, 어떤 말로 표현하는가?</h3>
+            
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[보조 질문]</strong>
+            </div>
+            <p style={styles.guideText}>
+              병원을 고를 때 반드시 확인하는 세 가지는?<br/>
+              의사의 경력, 치료사례, 장비, 비용, 후기, 회복기간 중 무엇이 중요한가?<br/>
+              무엇을 보면 신뢰가 생기는가?<br/>
+              반대로 무엇을 보면 병원을 제외하는가?<br/>
+              네이버·유튜브·지도에서 어떤 검색어를 입력하는가?<br/>
+              상담실에서 가장 먼저 묻는 질문은 무엇인가?<br/>
+              최종적으로 치료를 결정하면서 어떤 말을 하는가?
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#2c3e50'}}>[질문 문장]</strong>
+            </div>
+            <p style={styles.guideText}>
+              환자는 어떤 기준과 증거를 보고 병원을 선택하며, 검색과 상담에서 실제로 어떤 표현을 사용하는가?
+            </p>
+
+            <textarea
+              value={data.practice1.q5}
+              onChange={(e) => handleChange('practice1.q5', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+            />
+          </div>
         </div>
       )}
 
@@ -591,6 +737,41 @@ const styles = {
   },
   question: {
     marginBottom: '25px',
+  },
+  questionBlock: {
+    marginBottom: '35px',
+    paddingBottom: '20px',
+    borderBottom: '1px solid #eee',
+  },
+  questionNumber: {
+    fontSize: '15px',
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: '15px',
+    margin: '0 0 15px 0',
+  },
+  sectionLabel: {
+    marginTop: '12px',
+    marginBottom: '6px',
+  },
+  guideText: {
+    fontSize: '12px',
+    color: '#666',
+    margin: '0 0 12px 0',
+    lineHeight: '1.5',
+  },
+  noteBox: {
+    backgroundColor: '#f0f8ff',
+    border: '1px solid #cce5ff',
+    borderRadius: '5px',
+    padding: '10px',
+    marginBottom: '12px',
+  },
+  noteText: {
+    fontSize: '12px',
+    color: '#666',
+    margin: '5px 0 0 0',
+    lineHeight: '1.5',
   },
   label: {
     display: 'block',
