@@ -21,7 +21,7 @@ export default function App() {
   const [isExpired, setIsExpired] = useState(false);
   const [data, setData] = useState({
     practice1: { q1: '', q2: '', q3: '', q4: '', q5: '' },
-    practice2: { q1: '', q2: '', q3: '', q4: '', q5: '', q6: '' },
+    practice2: { q1: '', q2_alt: '', q2_diff: '', q3: '', q4: '', q5: '', q6: '' },
     practice3: {
       check1: { answer: '', memo: '' },
       check2: { answer: '', memo: '' },
@@ -520,28 +520,257 @@ export default function App() {
       {/* 실습2 탭 */}
       {activeTab === 1 && (
         <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>실습2</h2>
+          <h2 style={styles.sectionTitle}>실습 2.</h2>
           <p style={styles.description}>우리 병원의 가치제안 설계하기</p>
 
-          {[
-            { key: 'q1', label: '1. 환자의 어떤 문제에서 우리 병원이 가장 강한가?', guide: '"허리디스크를 잘 본다"가 아니라 "수술과 장기 휴직은 피하고 싶지만 빠른 업무 복귀가 필요한 장시간 운전 직군의 초기·중등도 허리디스크 환자에게 강하다"' },
-            { key: 'q2', label: '2. 환자는 왜 다른 병원이 아니라 우리 병원을 선택했을까?(우리 병원만의 차별성)', guide: '환자는 왜 다른 병원이 아니라 우리 병원을 선택했을까요? 진료 과정, 설명, 치료, 관리 중 무엇이 달랐나요? 그 차이로 인해 환자는 어떤 이점을 얻었나요?' },
-            { key: 'q3', label: '3. 우리만의 차이는 환자에게 어떤 도움이 되었는가?', guide: '2번에서의 우리 병원 차별성은 환자에게 어떤 도움이 되었는지 적어보세요. 예를들어 원장이 직접 검사 결과를 설명한다는 차이가 있으면, 이로 인해 환자는 상태를 정확히 이해하고 치료를 결정하는데에 도움이 되었을 것입니다.' },
-            { key: 'q4', label: '4. 우리 병원의 차별성을 만들어내는 구체적인 시스템은 무엇인가?', guide: '우리 병원의 차별성이 어떤 과정으로 만들어지는지 적어보세요. 예를 들어 환자가 치료 방향을 쉽게 이해할 수 있도록 MRI 결과를 원장이 직접 설명 한다거나, 치료 계획을 그림으로 안내 한다거나 하는 등 우리 만의 차별성을 만드는 시스템을 적어보세요.' },
-            { key: 'q5', label: '5. 우리 병원의 차별성을 보여줄 수 있는 객관적인 근거는 무엇인가?', guide: '우리 병원의 차별성이 단순한 주장에 그치지 않도록 객관적으로 보여줄 수 있는 근거를 적어보세요. 의료진 경력, 특정 질환 진료 경험, 환자 사례, 검사·치료 프로토콜, 장비, 학술활동, 환자 후기, 운영 데이터 등 환자가 신뢰할 수 있는 근거를 작성해보세요.' },
-            { key: 'q6', label: '6. 우리 병원 포지셔닝 한 문장 만들기', guide: '[상황과 문제]를 겪는 [대표 환자]에게, [병원명]은 [핵심 가치]를 제공하는 [병원 카테고리]다. [경쟁 대안]과 달리 [차별적 능력]을 갖추고 있으며, [객관적 근거]로 이를 증명한다.' },
-          ].map((item) => (
-            <div key={item.key} style={styles.question}>
-              <label style={styles.label}>{item.label}</label>
-              <p style={styles.guide}>가이드 : {item.guide}</p>
-              <textarea
-                value={data.practice2[item.key]}
-                onChange={(e) => handleChange(`practice2.${item.key}`, e.target.value)}
-                onBlur={saveDataLocal}
-                style={styles.textarea}
-              />
+          {/* 질문 1 */}
+          <div style={styles.questionBlock}>
+            <h3 style={styles.questionNumber}>1. 환자의 어떤 문제에서 우리 병원이 가장 강한가?</h3>
+            
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[나쁜 답 예시]</strong>
             </div>
-          ))}
+            <p style={styles.guideText}>
+              허리디스크를 잘 본다.
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[좋은 답 예시]</strong>
+            </div>
+            <p style={styles.guideText}>
+              수술과 장기휴직은 피하고 싶지만 빠른 업무복귀가 필요한 장시간 운전 직군의 초기·중등도 허리디스크 환자에게 강하다.
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[질문 문장]</strong>
+            </div>
+            <p style={styles.guideText}>
+              앞에서 정의한 환자의 상황·두려움·원하는 변화 중, 우리 병원이 가장 잘 해결할 수 있는 한 가지는 무엇인가?
+            </p>
+
+            <textarea
+              value={data.practice2.q1}
+              onChange={(e) => handleChange('practice2.q1', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+            />
+          </div>
+
+          {/* 질문 2 - 표 형식 */}
+          <div style={styles.questionBlock}>
+            <h3 style={styles.questionNumber}>2. 환자가 비교하는 대안과 우리 병원의 실제 차이는 무엇인가?</h3>
+            
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[질문 문장]</strong>
+            </div>
+            <p style={styles.guideText}>
+              환자가 우리 병원 대신 선택할 수 있는 대안은 무엇이며, 그 대안에는 없고 우리에게 실제로 있는 차이는 무엇인가?
+            </p>
+
+            <div style={styles.tableBox}>
+              <div style={styles.tableRow}>
+                <div style={styles.tableHeaderLeft}>[대안 예시]</div>
+                <div style={styles.tableHeaderRight}>[차이 예시]</div>
+              </div>
+              <div style={styles.tableRow}>
+                <div style={styles.tableContent}>
+                  인근 경쟁병원<br/>
+                  대학병원<br/>
+                  다른 치료 방식<br/>
+                  약이나 자가관리<br/>
+                  치료를 미루는 것<br/>
+                  가격이 더 저렴한 병원
+                </div>
+                <div style={styles.tableContent}>
+                  의료진의 특정 경험과 전문 분야<br/>
+                  진단 방식<br/>
+                  치료계획 수립 방식<br/>
+                  협진 구조<br/>
+                  상담과 설명 방식<br/>
+                  예약 및 진료 속도<br/>
+                  통증 및 회복 관리<br/>
+                  사후관리 체계
+                </div>
+              </div>
+            </div>
+
+            <div style={styles.noteBox}>
+              <strong style={{color: '#666'}}>[참고]</strong>
+              <p style={styles.noteText}>
+                핵심은 "우리가 잘한다"가 아니라 "대안과 비교했을 때 무엇이 실제로 다른가"입니다.
+              </p>
+            </div>
+
+            <label style={{display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#2c3e50'}}>우리 병원의 대안:</label>
+            <textarea
+              value={data.practice2.q2_alt}
+              onChange={(e) => handleChange('practice2.q2_alt', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+              placeholder="환자가 선택할 수 있는 대안을 적어주세요"
+            />
+
+            <label style={{display: 'block', marginBottom: '8px', marginTop: '15px', fontWeight: 'bold', color: '#2c3e50'}}>우리의 차이:</label>
+            <textarea
+              value={data.practice2.q2_diff}
+              onChange={(e) => handleChange('practice2.q2_diff', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+              placeholder="대안에는 없고 우리에게 있는 차이를 적어주세요"
+            />
+          </div>
+
+          {/* 질문 3 */}
+          <div style={styles.questionBlock}>
+            <h3 style={styles.questionNumber}>3. 우리만의 차이는 환자에게 어떤 가치가 되는가?</h3>
+            
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[작성 항목]</strong>
+            </div>
+            <p style={styles.guideText}>
+              우리는 ______하기 때문에, 환자는 ______할 수 있다.
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[예]</strong>
+            </div>
+            <p style={styles.guideText}>
+              전문의가 직접 영상검사를 설명하기 때문에<br/>
+              → 환자는 자신의 상태와 치료 선택지를 이해하고 결정할 수 있다.<br/>
+              <br/>
+              치료 단계를 미리 안내하기 때문에<br/>
+              → 환자는 회복기간과 업무 일정을 계획할 수 있다.<br/>
+              <br/>
+              수술과 비수술 치료를 함께 검토하기 때문에<br/>
+              → 환자는 한 가지 치료만 강요받는다는 불안을 줄일 수 있다.
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[질문 문장]</strong>
+            </div>
+            <p style={styles.guideText}>
+              우리 병원의 차별적 능력은 환자의 어떤 두려움을 줄이고, 어떤 원하는 변화를 가능하게 하는가?
+            </p>
+
+            <textarea
+              value={data.practice2.q3}
+              onChange={(e) => handleChange('practice2.q3', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+            />
+          </div>
+
+          {/* 질문 4 */}
+          <div style={styles.questionBlock}>
+            <h3 style={styles.questionNumber}>4. 그 가치를 만들어내는 구체적인 시스템은 무엇인가?</h3>
+            
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[보조 질문]</strong>
+            </div>
+            <p style={styles.guideText}>
+              초진부터 치료 결정까지 어떤 순서로 진행되는가?<br/>
+              환자의 불안을 줄이기 위해 무엇을 설명하는가?<br/>
+              치료 전후 어떤 관리를 제공하는가?<br/>
+              의료진 개인의 능력이 아니라 병원 시스템으로 반복 가능한가?<br/>
+              환자가 직접 체감하는 순간은 언제인가?
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[질문 문장]</strong>
+            </div>
+            <p style={styles.guideText}>
+              우리가 약속하는 가치를 매번 일관되게 제공하기 위해 갖추고 있는 진단·상담·치료·사후관리 시스템은 무엇인가?
+            </p>
+
+            <textarea
+              value={data.practice2.q4}
+              onChange={(e) => handleChange('practice2.q4', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+            />
+          </div>
+
+          {/* 질문 5 */}
+          <div style={styles.questionBlock}>
+            <h3 style={styles.questionNumber}>5. 환자가 이 주장을 믿게 만드는 근거는 무엇인가?</h3>
+            
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[근거의 예]</strong>
+            </div>
+            <p style={styles.guideText}>
+              의료진의 자격과 구체적인 진료경력<br/>
+              특정 질환 또는 치료의 실제 경험<br/>
+              표준화된 검사·상담·사후관리 프로토콜<br/>
+              유사 환자 사례<br/>
+              환자 후기에서 반복적으로 등장하는 표현<br/>
+              객관적으로 확인할 수 있는 장비와 시설<br/>
+              치료 후 추적관리 기록<br/>
+              외부기관 인증이나 학술활동<br/>
+              실제 가능한 범위의 객관적 수치
+            </p>
+
+            <div style={styles.sectionLabel}>
+              <strong style={{color: '#666'}}>[질문 문장]</strong>
+            </div>
+            <p style={styles.guideText}>
+              우리 병원의 차별적 가치가 단순한 주장이 아니라는 것을 보여줄 수 있는 검증 가능한 근거는 무엇인가?
+            </p>
+
+            <textarea
+              value={data.practice2.q5}
+              onChange={(e) => handleChange('practice2.q5', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+            />
+          </div>
+
+          {/* 포지셔닝 한 문장 - 표 형식 */}
+          <div style={styles.questionBlock}>
+            <h3 style={{fontSize: '15px', fontWeight: 'bold', color: '#2c3e50', marginBottom: '15px', margin: '0 0 15px 0'}}>
+              📌 우리 병원 포지셔닝 한 문장
+            </h3>
+
+            <div style={styles.tableBox}>
+              <div style={styles.tableRow}>
+                <div style={styles.tableHeaderLeft}>[가이드]</div>
+                <div style={styles.tableHeaderRight}>[포지셔닝 한 문장]</div>
+              </div>
+              <div style={styles.tableRow}>
+                <div style={styles.tableContent}>
+                  <strong style={{color: '#666'}}>[상황과 문제]</strong>를 겪는<br/>
+                  <strong style={{color: '#666'}}>[대표 환자]</strong>에게,<br/>
+                  <strong style={{color: '#666'}}>[병원명]</strong>은 <strong style={{color: '#666'}}>[핵심 가치]</strong>을<br/>
+                  제공하는 <strong style={{color: '#666'}}>[병원 카테고리]</strong>다.<br/>
+                  <br/>
+                  <strong style={{color: '#666'}}>[경쟁 대안]</strong>과 달리<br/>
+                  <strong style={{color: '#666'}}>[차별적 능력]</strong>을 갖추고 있으며,<br/>
+                  <strong style={{color: '#666'}}>[객관적 근거]</strong>로 이를<br/>
+                  증명한다.
+                </div>
+                <div style={styles.tableContent}>
+                  ________한 상황에<br/>
+                  놓인 ________ 환자에게,<br/>
+                  우리 병원은<br/>
+                  ________을 통해<br/>
+                  ________할 수 있도록<br/>
+                  돕는 병원이다.<br/>
+                  <br/>
+                  다른 대안과 달리<br/>
+                  우리는 ________하며,<br/>
+                  이는 ________으로<br/>
+                  증명할 수 있다.
+                </div>
+              </div>
+            </div>
+
+            <textarea
+              value={data.practice2.q6}
+              onChange={(e) => handleChange('practice2.q6', e.target.value)}
+              onBlur={saveDataLocal}
+              style={styles.textarea}
+              placeholder="우리 병원 포지셔닝을 한 문장으로 적어주세요"
+            />
+          </div>
         </div>
       )}
 
@@ -775,6 +1004,43 @@ const styles = {
     color: '#666',
     margin: '5px 0 0 0',
     lineHeight: '1.5',
+  },
+  tableBox: {
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    overflow: 'hidden',
+    marginBottom: '15px',
+  },
+  tableRow: {
+    display: 'flex',
+  },
+  tableHeaderLeft: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    padding: '12px',
+    fontWeight: 'bold',
+    color: '#666',
+    fontSize: '12px',
+    borderRight: '1px solid #ddd',
+    borderBottom: '1px solid #ddd',
+  },
+  tableHeaderRight: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    padding: '12px',
+    fontWeight: 'bold',
+    color: '#666',
+    fontSize: '12px',
+    borderBottom: '1px solid #ddd',
+  },
+  tableContent: {
+    flex: 1,
+    padding: '12px',
+    fontSize: '12px',
+    color: '#666',
+    lineHeight: '1.6',
+    borderRight: '1px solid #ddd',
+    borderBottom: '1px solid #ddd',
   },
   label: {
     display: 'block',
