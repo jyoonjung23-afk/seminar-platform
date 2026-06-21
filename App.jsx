@@ -753,6 +753,9 @@ const styles = {
   sectionLabel: {
     marginTop: '12px',
     marginBottom: '6px',
+    fontSize: '12px',
+    color: '#666',
+    fontWeight: 'normal',
   },
   guideText: {
     fontSize: '12px',
